@@ -5,10 +5,10 @@ MEMORY
 	OPT : ORIGIN = 0xC0, LENGTH = 4
 	SEC_ID : ORIGIN = 0xC4, LENGTH = 10
 	OCDSTAD : ORIGIN = 0xCE, LENGTH = 10
-	OCDROM : ORIGIN = 0x3E00, LENGTH = 512
-	ROM : ORIGIN = 0xD8, LENGTH = 15656
-	MIRROR : ORIGIN = 0xF2000, LENGTH = 8192
-	RAM : ORIGIN = 0xFFB00, LENGTH = 1024
+	OCDROM : ORIGIN = 0x7E00, LENGTH = 512
+	ROM : ORIGIN = 0xD8, LENGTH = 32040
+	MIRROR : ORIGIN = 0xF2000, LENGTH = 24576
+	RAM : ORIGIN = 0xFF900, LENGTH = 1536
 }
 SECTIONS
 {
@@ -20,11 +20,11 @@ SECTIONS
 	{
 		KEEP(*(.vects))
 	} > IVEC
-	.option_bytes 0xc0 : AT(0xc0)
+	.option_bytes 0xC0: AT(0xC0)
 	{
 		KEEP(*(.option_bytes))
 	} > OPT
-	.security_id 0xc4 : AT(0xc4)
+	.security_id 0xC4: AT(0xC4)
 	{
 		KEEP(*(.security_id))
 	} > SEC_ID
@@ -72,7 +72,7 @@ SECTIONS
 		*(.got.plt)
 	} > ROM
 	PROVIDE(__mirror = 0x2000);
-	PROVIDE(__mirror_end = __mirror + 8192);
+	PROVIDE(__mirror_end = __mirror + 24576);
 	PROVIDE(__rodata = ADDR (.rodata)); 
 	.rodata MAX(., 0x2000): 
 	{
@@ -111,7 +111,7 @@ SECTIONS
 		*(.jcr)
 		. = ALIGN(2);
 	} > ROM
-	.data 0xFFB00: AT(_mdata)
+	.data 0xFF900: AT(_mdata)
 	{
 		. = ALIGN(2);
 		_data = .;
