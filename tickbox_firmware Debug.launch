@@ -5,11 +5,8 @@
     <intAttribute key="com.renesas.cdt.core.connectionTimeout" value="30"/>
     <stringAttribute key="com.renesas.cdt.core.initCommands" value=""/>
     <stringAttribute key="com.renesas.cdt.core.ipAddress" value="localhost"/>
-    <stringAttribute key="com.renesas.cdt.core.jtagDevice" value="RL78 Simulator"/>
     <stringAttribute key="com.renesas.cdt.core.jtagDeviceId" value="com.renesas.hardwaredebug.simulator.rl78"/>
-    <listAttribute key="com.renesas.cdt.core.listGDBExe">
-        <listEntry value="rl78-elf-gdb"/>
-    </listAttribute>
+    <listAttribute key="com.renesas.cdt.core.listGDBExe"/>
     <listAttribute key="com.renesas.cdt.core.listGDBLaunchName">
         <listEntry value="main"/>
     </listAttribute>
@@ -22,11 +19,11 @@
     <stringAttribute key="com.renesas.cdt.core.runCommands" value=""/>
     <stringAttribute key="com.renesas.cdt.core.secondGDBExe" value="green_dsp-elf-gdb"/>
     <intAttribute key="com.renesas.cdt.core.secondGdbPortNumber" value="61237"/>
-    <stringAttribute key="com.renesas.cdt.core.serverParam" value="-g SIMULATOR  -usecurityIdSize &quot;10&quot; -t R5F10RLC -uConnectionTimeout= 30 -umFreq= &quot;2.00&quot; -usFreq= &quot;32.768&quot; -uresetOnReload= 1 -udisplaySimGUI= 1 -uSimulatorSetting= &quot;${workspace_loc:/${ProjName}}/${LaunchConfigName}.simpj&quot; -uOSRestriction= 0 -uRelayBreak= 0"/>
+    <stringAttribute key="com.renesas.cdt.core.serverParam" value="-g SIMULATOR  -usecurityIdSize &quot;10&quot; -t R5F10RLA -uConnectionTimeout= 30 -umFreq= &quot;2.00&quot; -usFreq= &quot;32.768&quot; -uresetOnReload= 1 -udisplaySimGUI= 1 -uSimulatorSetting= &quot;${workspace_loc:/${ProjName}}/${LaunchConfigName}.simpj&quot; -uOSRestriction= 0 -uRelayBreak= 0"/>
     <booleanAttribute key="com.renesas.cdt.core.setResume" value="true"/>
     <booleanAttribute key="com.renesas.cdt.core.setStopAt" value="true"/>
     <stringAttribute key="com.renesas.cdt.core.stopAt" value="main"/>
-    <stringAttribute key="com.renesas.cdt.core.targetDevice" value="R5F10RLC"/>
+    <stringAttribute key="com.renesas.cdt.core.targetDevice" value="R5F10RLA"/>
     <booleanAttribute key="com.renesas.cdt.core.useRemoteTarget" value="true"/>
     <stringAttribute key="com.renesas.cdt.launch.dsf.IO_MAP" value="${support_area_loc}"/>
     <booleanAttribute key="com.renesas.cdt.launch.dsf.USE_DEFAULT_IO_MAP" value="true"/>

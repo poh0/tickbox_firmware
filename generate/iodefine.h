@@ -1,6 +1,6 @@
 /************************************************************************/
 /* Header file generated from device file:                              */
-/*    DR5F10RLC.DVF                                                     */
+/*    DR5F10RLA.DVF                                                     */
 /*    V1.03a (2021/06/11)                                               */
 /*    Copyright(C) 2021 Renesas                                         */
 /* Tool Version: 4.0.5                                                  */
