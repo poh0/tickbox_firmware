@@ -20,10 +20,10 @@
 /***********************************************************************************************************************
 * File Name    : r_cg_pclbuz.c
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
-* Device(s)    : R5F10RLC
+* Device(s)    : R5F10RLA
 * Tool-Chain   : GCCRL78
 * Description  : This file implements device driver for PCLBUZ module.
-* Creation Date: 17/07/2025
+* Creation Date: 10/07/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -51,7 +51,7 @@ void R_PCLBUZ0_Create(void)
 {
     RTCEN = 1U;    /* supply PCLBUZ0 clock */
     PCLOE0 = 0U;   /* disable PCLBUZ0 operation */
-    CKS0 = _0C_PCLBUZ_OUTCLK_fSUB4;
+    CKS0 = _08_PCLBUZ_OUTCLK_fSUB0;
     /* Set PCLBUZ0 pin */
     PFSEG3 &= 0xF7U;
     P14 &= 0xFEU;

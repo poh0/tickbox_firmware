@@ -20,10 +20,10 @@
 /***********************************************************************************************************************
 * File Name    : r_cg_intc_user.c
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
-* Device(s)    : R5F10RLC
+* Device(s)    : R5F10RLA
 * Tool-Chain   : GCCRL78
 * Description  : This file implements device driver for INTC module.
-* Creation Date: 17/07/2025
+* Creation Date: 10/07/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -50,7 +50,6 @@ Global variables and functions
 void r_intc0_interrupt(void)
 {
     /* Start user code. Do not edit comment generated here */
-	g_intp0_flag = 1U;
     /* End user code. Do not edit comment generated here */
 }
 

@@ -20,10 +20,10 @@
 /***********************************************************************************************************************
 * File Name    : r_cg_userdefine.h
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
-* Device(s)    : R5F10RLC
+* Device(s)    : R5F10RLA
 * Tool-Chain   : GCCRL78
 * Description  : This file includes user definition.
-* Creation Date: 17/07/2025
+* Creation Date: 10/07/2025
 ***********************************************************************************************************************/
 
 #ifndef _USER_DEF_H
@@ -34,28 +34,8 @@ User definitions
 ***********************************************************************************************************************/
 
 /* Start user code for function. Do not edit comment generated here */
-void r_main_handle_intp0(void);
 
-
-#define WATCH_DISPLAY   (0x00)      /* Display state (normal time display) */
-#define HOUR_ADJUST     (0x01)      /* Display state (hour adjust) */
-#define MINUTE_ADJUST   (0x02)      /* Display state (minute adjust) */
-
-#define NORMAL_OP       (0x00)      /* Watch state (normal operation)*/
-#define SET_TIME        (0x01)      /* Watch state (set time)*/
-#define SET_ALARM       (0x02)      /* Watch state (set alarm)*/
-#define ALARM_ON        (0x03)      /* Watch state (alarm is ringing)*/
-
-#define SEG_COL SEG11               /* Colon segment register */
-
-#define INT_CONSTPERIOD 0
-#define INT_ALARM 1
-
-#define IT_DELAY_ONESEC 8
-#define IT_DELAY_HALFSEC 4
-
-extern volatile uint8_t g_rtc_tick_flag;
-extern volatile uint8_t g_intp0_flag;
+#define SEG_COL SEG11 /* Colon segment*/
 
 /* End user code. Do not edit comment generated here */
 #endif

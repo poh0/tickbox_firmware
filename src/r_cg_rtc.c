@@ -20,10 +20,10 @@
 /***********************************************************************************************************************
 * File Name    : r_cg_rtc.c
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
-* Device(s)    : R5F10RLC
+* Device(s)    : R5F10RLA
 * Tool-Chain   : GCCRL78
 * Description  : This file implements device driver for RTC module.
-* Creation Date: 17/07/2025
+* Creation Date: 10/07/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -53,9 +53,9 @@ void R_RTC_Create(void)
     RTCE = 0U;     /* disable RTC clock operation */
     RTCMK = 1U;    /* disable INTRTC interrupt */
     RTCIF = 0U;    /* clear INTRTC interrupt flag */
-    /* Set INTRTC high priority */
-    RTCPR1 = 0U;
-    RTCPR0 = 0U;
+    /* Set INTRTC low priority */
+    RTCPR1 = 1U;
+    RTCPR0 = 1U;
     RTCC0 = _00_RTC_RTC1HZ_DISABLE | _08_RTC_24HOUR_SYSTEM | _03_RTC_INTRTC_CLOCK_2;
     /* Set real-time clock */
     SEC = _00_RTC_COUNTER_SEC;
@@ -65,6 +65,9 @@ void R_RTC_Create(void)
     DAY = _01_RTC_COUNTER_DAY;
     MONTH = _01_RTC_COUNTER_MONTH;
     YEAR = _00_RTC_COUNTER_YEAR;
+    /* Set alarm function */
+    WALE = 0U;     /* invalidate alarm match operation */
+    WALIE = 1U;    /* generate INTRTC on matching of alarm */
 }
 
 /***********************************************************************************************************************
@@ -194,6 +197,76 @@ MD_STATUS R_RTC_Set_CounterValue(rtc_counter_value_t counter_write_val)
     }
 
     return (status);
+}
+
+/***********************************************************************************************************************
+* Function Name: R_RTC_Set_AlarmOn
+* Description  : This function starts the alarm operation.
+* Arguments    : None
+* Return Value : None
+***********************************************************************************************************************/
+void R_RTC_Set_AlarmOn(void)
+{
+    RTCMK = 1U;    /* disable INTRTC interrupt */
+    RTCC1 |= _80_RTC_ALARM_ENABLE;    /* enable RTC alarm operation */
+    RTCC1 &= (uint8_t)~_10_RTC_ALARM_MATCH;
+    RTCIF = 0U;    /* clear INTRTC interrupt flag */
+    RTCMK = 0U;    /* enable INTRTC interrupt */
+}
+
+/***********************************************************************************************************************
+* Function Name: R_RTC_Set_AlarmOff
+* Description  : This function stops the alarm operation.
+* Arguments    : None
+* Return Value : None
+***********************************************************************************************************************/
+void R_RTC_Set_AlarmOff(void)
+{
+    RTCMK = 1U;    /* disable INTRTC interrupt */
+    RTCC1 &= (uint8_t)~_80_RTC_ALARM_ENABLE;    /* disable RTC alarm operation */
+    RTCC1 &= (uint8_t)~_10_RTC_ALARM_MATCH;
+    RTCIF = 0U;    /* clear INTRTC interrupt flag */
+}
+
+/***********************************************************************************************************************
+* Function Name: R_RTC_Set_AlarmValue
+* Description  : This function sets alarm value.
+* Arguments    : alarm_val -
+*                    the expected alarm value(BCD code)
+* Return Value : None
+***********************************************************************************************************************/
+void R_RTC_Set_AlarmValue(rtc_alarm_value_t alarm_val)
+{
+    RTCMK = 1U;    /* disable INTRTC interrupt */
+    RTCC1 &= (uint8_t)~_80_RTC_ALARM_ENABLE;    /* disable RTC alarm operation */
+    RTCC1 |= _40_RTC_ALARM_INT_ENABLE;
+    ALARMWM = alarm_val.alarmwm;
+    ALARMWH = alarm_val.alarmwh;
+    ALARMWW = alarm_val.alarmww;
+    RTCC1 |= _80_RTC_ALARM_ENABLE;    /* enable RTC alarm operation */
+    RTCC1 &= (uint8_t)~_10_RTC_ALARM_MATCH;
+    RTCIF = 0U;    /* clear INTRTC interrupt flag */
+    RTCMK = 0U;    /* enable INTRTC interrupt */
+}
+
+/***********************************************************************************************************************
+* Function Name: R_RTC_Get_AlarmValue
+* Description  : This function gets alarm value.
+* Arguments    : alarm_val -
+*                    the address to save alarm value(BCD code)
+* Return Value : None
+***********************************************************************************************************************/
+void R_RTC_Get_AlarmValue(rtc_alarm_value_t * const alarm_val)
+{
+    RTCMK = 1U;    /* disable INTRTC interrupt */
+    RTCC1 &= (uint8_t)~_80_RTC_ALARM_ENABLE;    /* disable RTC alarm operation */
+    alarm_val->alarmwm = ALARMWM;
+    alarm_val->alarmwh = ALARMWH;
+    alarm_val->alarmww = ALARMWW;
+    RTCC1 |= _80_RTC_ALARM_ENABLE;    /* enable RTC alarm operation */
+    RTCC1 &= (uint8_t)~_10_RTC_ALARM_MATCH;
+    RTCIF = 0U;    /* clear INTRTC interrupt flag */
+    RTCMK = 0U;    /* enable INTRTC interrupt */
 }
 
 /***********************************************************************************************************************
