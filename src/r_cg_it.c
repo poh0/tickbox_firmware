@@ -18,11 +18,11 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : r_cg_lcd.c
+* File Name    : r_cg_it.c
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
 * Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
-* Description  : This file implements device driver for LCD module.
+* Description  : This file implements device driver for IT module.
 * Creation Date: 17/07/2025
 ***********************************************************************************************************************/
 
@@ -30,7 +30,7 @@
 Includes
 ***********************************************************************************************************************/
 #include "r_cg_macrodriver.h"
-#include "r_cg_lcd.h"
+#include "r_cg_it.h"
 /* Start user code for include. Do not edit comment generated here */
 /* End user code. Do not edit comment generated here */
 #include "r_cg_userdefine.h"
@@ -42,98 +42,47 @@ Global variables and functions
 /* End user code. Do not edit comment generated here */
 
 /***********************************************************************************************************************
-* Function Name: R_LCD_Create
-* Description  : This function initializes the LCD module.
+* Function Name: R_IT_Create
+* Description  : This function initializes the IT module.
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
-void R_LCD_Create(void)
+void R_IT_Create(void)
 {
-    RTCEN = 1U;    /* supply LCD clock */
-    LCDON = 0U;    /* disable LCD clock operation */
-    LCDM0 = _00_LCD_DISPLAY_WAVEFORM_A | _00_LCD_DISPLAY_STATIC;
-    LCDM0 |= _00_LCD_VOLTAGE_MODE_EXTERNAL;
-    /* Set segment pins */
-    PFSEG0 |= 0x40U;
-    PFSEG1 |= 0xFFU;
-    PFSEG2 |= 0xFDU;
-    PFSEG3 |= 0x97U;
-    PFSEG4 |= 0x7FU;
-    POM1 &= 0x7EU;
-    PIM1 &= 0xFEU;
-    PU1 &= 0x66U;
-    PMC1 &= 0xE7U;
-    P1 &= 0x66U;
-    PM1 &= 0x66U;
-    PU3 &= 0xFCU;
-    P3 &= 0xFCU;
-    PM3 &= 0xFCU;
-    PU4 &= 0xF1U;
-    PMC4 &= 0xFDU;
-    P4 &= 0xF1U;
-    PM4 &= 0xF1U;
-    PU5 &= 0xE1U;
-    P5 &= 0xE1U;
-    PM5 &= 0xE1U;
-    P6 &= 0xFCU;
-    PM6 &= 0xFCU;
-    PU7 &= 0xE0U;
-    P7 &= 0xE0U;
-    PM7 &= 0xE0U;
-    PU12 &= 0xFEU;
-    PMC12 &= 0xFEU;
-    P12 &= 0xFEU;
-    PM12 &= 0xFEU;
-    PU14 &= 0x01U;
-    PMC14 &= 0xC3U;
-    P14 &= 0x01U;
-    PM14 &= 0x01U;
-    LCDM1 |= _00_LCD_DISPLAY_PATTERN_A;
-    LCDC0 = _08_LCD_CLOCK_FSUB_FIL_9;
+    RTCEN = 1U;    /* supply IT clock */
+    ITMC = _0000_IT_OPERATION_DISABLE;    /* disable IT operation */
+    ITMK = 1U;    /* disable INTIT interrupt */
+    ITIF = 0U;    /* clear INTIT interrupt flag */
+    /* Set INTIT low priority */
+    ITPR1 = 1U;
+    ITPR0 = 1U;
+    ITMC = _0FFF_ITMCMP_VALUE;
 }
 
 /***********************************************************************************************************************
-* Function Name: R_LCD_Start
-* Description  : This function enables the LCD display.
+* Function Name: R_IT_Start
+* Description  : This function starts IT module operation.
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
-void R_LCD_Start(void)
+void R_IT_Start(void)
 {
-    LCDON = 1U;
+    ITIF = 0U;    /* clear INTIT interrupt flag */
+    ITMK = 0U;    /* enable INTIT interrupt */
+    ITMC |= _8000_IT_OPERATION_ENABLE;    /* enable IT operation */
 }
 
 /***********************************************************************************************************************
-* Function Name: R_LCD_Stop
-* Description  : This function disables the LCD display.
+* Function Name: R_IT_Stop
+* Description  : This function stops IT module operation.
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
-void R_LCD_Stop(void)
+void R_IT_Stop(void)
 {
-    LCDON = 0U;
-}
-
-/***********************************************************************************************************************
-* Function Name: R_LCD_Set_VoltageOn
-* Description  : This function enables voltage boost circuit or capacitor split circuit.
-* Arguments    : None
-* Return Value : None
-***********************************************************************************************************************/
-void R_LCD_Set_VoltageOn(void)
-{
-    SCOC = 1U;
-}
-
-/***********************************************************************************************************************
-* Function Name: R_LCD_Set_VoltageOff
-* Description  : This function disables voltage boost circuit or capacitor split circuit.
-* Arguments    : None
-* Return Value : None
-***********************************************************************************************************************/
-void R_LCD_Set_VoltageOff(void)
-{
-    SCOC = 0U;
+    ITMK = 1U;    /* disable INTIT interrupt */
+    ITIF = 0U;    /* clear INTIT interrupt flag */
+    ITMC &= (uint16_t)~_8000_IT_OPERATION_ENABLE;    /* disable IT operation */
 }
 
 /* Start user code for adding. Do not edit comment generated here */

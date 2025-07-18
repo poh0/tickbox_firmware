@@ -18,19 +18,19 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : r_cg_lcd.c
+* File Name    : r_cg_timer.c
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
 * Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
-* Description  : This file implements device driver for LCD module.
-* Creation Date: 17/07/2025
+* Description  : This file implements device driver for TAU module.
+* Creation Date: 15/07/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
 Includes
 ***********************************************************************************************************************/
 #include "r_cg_macrodriver.h"
-#include "r_cg_lcd.h"
+#include "r_cg_timer.h"
 /* Start user code for include. Do not edit comment generated here */
 /* End user code. Do not edit comment generated here */
 #include "r_cg_userdefine.h"
@@ -42,98 +42,78 @@ Global variables and functions
 /* End user code. Do not edit comment generated here */
 
 /***********************************************************************************************************************
-* Function Name: R_LCD_Create
-* Description  : This function initializes the LCD module.
+* Function Name: R_TAU0_Create
+* Description  : This function initializes the TAU0 module.
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
-void R_LCD_Create(void)
+void R_TAU0_Create(void)
 {
-    RTCEN = 1U;    /* supply LCD clock */
-    LCDON = 0U;    /* disable LCD clock operation */
-    LCDM0 = _00_LCD_DISPLAY_WAVEFORM_A | _00_LCD_DISPLAY_STATIC;
-    LCDM0 |= _00_LCD_VOLTAGE_MODE_EXTERNAL;
-    /* Set segment pins */
-    PFSEG0 |= 0x40U;
-    PFSEG1 |= 0xFFU;
-    PFSEG2 |= 0xFDU;
-    PFSEG3 |= 0x97U;
-    PFSEG4 |= 0x7FU;
-    POM1 &= 0x7EU;
-    PIM1 &= 0xFEU;
-    PU1 &= 0x66U;
-    PMC1 &= 0xE7U;
-    P1 &= 0x66U;
-    PM1 &= 0x66U;
-    PU3 &= 0xFCU;
-    P3 &= 0xFCU;
-    PM3 &= 0xFCU;
-    PU4 &= 0xF1U;
-    PMC4 &= 0xFDU;
-    P4 &= 0xF1U;
-    PM4 &= 0xF1U;
-    PU5 &= 0xE1U;
-    P5 &= 0xE1U;
-    PM5 &= 0xE1U;
-    P6 &= 0xFCU;
-    PM6 &= 0xFCU;
-    PU7 &= 0xE0U;
-    P7 &= 0xE0U;
-    PM7 &= 0xE0U;
-    PU12 &= 0xFEU;
-    PMC12 &= 0xFEU;
-    P12 &= 0xFEU;
-    PM12 &= 0xFEU;
-    PU14 &= 0x01U;
-    PMC14 &= 0xC3U;
-    P14 &= 0x01U;
-    PM14 &= 0x01U;
-    LCDM1 |= _00_LCD_DISPLAY_PATTERN_A;
-    LCDC0 = _08_LCD_CLOCK_FSUB_FIL_9;
+    TAU0EN = 1U;    /* supplies input clock */
+    TPS0 = _0009_TAU_CKM0_FCLK_9 | _0000_TAU_CKM1_FCLK_0 | _0000_TAU_CKM2_FCLK_1 | _0000_TAU_CKM3_FCLK_8;
+    /* Stop all channels */
+    TT0 = _0001_TAU_CH0_STOP_TRG_ON | _0002_TAU_CH1_STOP_TRG_ON | _0004_TAU_CH2_STOP_TRG_ON |
+          _0008_TAU_CH3_STOP_TRG_ON | _0010_TAU_CH4_STOP_TRG_ON | _0020_TAU_CH5_STOP_TRG_ON |
+          _0040_TAU_CH6_STOP_TRG_ON | _0080_TAU_CH7_STOP_TRG_ON | _0200_TAU_CH1_H8_STOP_TRG_ON |
+          _0800_TAU_CH3_H8_STOP_TRG_ON;
+    /* Mask channel 0 interrupt */
+    TMMK00 = 1U;    /* disable INTTM00 interrupt */
+    TMIF00 = 0U;    /* clear INTTM00 interrupt flag */
+    /* Mask channel 1 interrupt */
+    TMMK01 = 1U;    /* disable INTTM01 interrupt */
+    TMIF01 = 0U;    /* clear INTTM01 interrupt flag */
+    /* Mask channel 1 higher 8 bits interrupt */
+    TMMK01H = 1U;    /* disable INTTM01H interrupt */
+    TMIF01H = 0U;    /* clear INTTM01H interrupt flag */
+    /* Mask channel 2 interrupt */
+    TMMK02 = 1U;    /* disable INTTM02 interrupt */
+    TMIF02 = 0U;    /* clear INTTM02 interrupt flag */
+    /* Mask channel 3 interrupt */
+    TMMK03 = 1U;    /* disable INTTM03 interrupt */
+    TMIF03 = 0U;    /* clear INTTM03 interrupt flag */
+    /* Mask channel 3 higher 8 bits interrupt */
+    TMMK03H = 1U;    /* disable INTTM03H interrupt */
+    TMIF03H = 0U;    /* clear INTTM03H interrupt flag */
+    /* Mask channel 4 interrupt */
+    TMMK04 = 1U;    /* disable INTTM04 interrupt */
+    TMIF04 = 0U;    /* clear INTTM04 interrupt flag */
+    /* Mask channel 5 interrupt */
+    TMMK05 = 1U;    /* disable INTTM05 interrupt */
+    TMIF05 = 0U;    /* clear INTTM05 interrupt flag */
+    /* Mask channel 6 interrupt */
+    TMMK06 = 1U;    /* disable INTTM06 interrupt */
+    TMIF06 = 0U;    /* clear INTTM06 interrupt flag */
+    /* Mask channel 7 interrupt */
+    TMMK07 = 1U;    /* disable INTTM07 interrupt */
+    TMIF07 = 0U;    /* clear INTTM07 interrupt flag */
+    /* Channel 0 used as interval timer */
+    TMR00 = _0000_TAU_CLOCK_SELECT_CKM0 | _0000_TAU_CLOCK_MODE_CKS | _0000_TAU_COMBINATION_SLAVE |
+            _0000_TAU_TRIGGER_SOFTWARE | _0000_TAU_MODE_INTERVAL_TIMER | _0000_TAU_START_INT_UNUSED;
+    TDR00 = _B71A_TAU_TDR00_VALUE;
+    TO0 &= ~_0001_TAU_CH0_OUTPUT_VALUE_1;
+    TOE0 &= ~_0001_TAU_CH0_OUTPUT_ENABLE;
 }
 
 /***********************************************************************************************************************
-* Function Name: R_LCD_Start
-* Description  : This function enables the LCD display.
+* Function Name: R_TAU0_Channel0_Start
+* Description  : This function starts TAU0 channel 0 counter.
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
-void R_LCD_Start(void)
-{
-    LCDON = 1U;
+void R_TAU0_Channel0_Start(void)
+{  
+    TS0 |= _0001_TAU_CH0_START_TRG_ON;
 }
 
 /***********************************************************************************************************************
-* Function Name: R_LCD_Stop
-* Description  : This function disables the LCD display.
+* Function Name: R_TAU0_Channel0_Stop
+* Description  : This function stops TAU0 channel 0 counter.
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
-void R_LCD_Stop(void)
+void R_TAU0_Channel0_Stop(void)
 {
-    LCDON = 0U;
-}
-
-/***********************************************************************************************************************
-* Function Name: R_LCD_Set_VoltageOn
-* Description  : This function enables voltage boost circuit or capacitor split circuit.
-* Arguments    : None
-* Return Value : None
-***********************************************************************************************************************/
-void R_LCD_Set_VoltageOn(void)
-{
-    SCOC = 1U;
-}
-
-/***********************************************************************************************************************
-* Function Name: R_LCD_Set_VoltageOff
-* Description  : This function disables voltage boost circuit or capacitor split circuit.
-* Arguments    : None
-* Return Value : None
-***********************************************************************************************************************/
-void R_LCD_Set_VoltageOff(void)
-{
-    SCOC = 0U;
+    TT0 |= _0001_TAU_CH0_STOP_TRG_ON;
 }
 
 /* Start user code for adding. Do not edit comment generated here */

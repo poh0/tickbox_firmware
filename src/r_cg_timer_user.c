@@ -18,44 +18,28 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : r_cg_userdefine.h
+* File Name    : r_cg_timer_user.c
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
 * Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
-* Description  : This file includes user definition.
-* Creation Date: 17/07/2025
+* Description  : This file implements device driver for TAU module.
+* Creation Date: 15/07/2025
 ***********************************************************************************************************************/
-
-#ifndef _USER_DEF_H
-#define _USER_DEF_H
 
 /***********************************************************************************************************************
-User definitions
+Includes
 ***********************************************************************************************************************/
-
-/* Start user code for function. Do not edit comment generated here */
-void r_main_handle_intp0(void);
-
-
-#define WATCH_DISPLAY   (0x00)      /* Display state (normal time display) */
-#define HOUR_ADJUST     (0x01)      /* Display state (hour adjust) */
-#define MINUTE_ADJUST   (0x02)      /* Display state (minute adjust) */
-
-#define NORMAL_OP       (0x00)      /* Watch state (normal operation)*/
-#define SET_TIME        (0x01)      /* Watch state (set time)*/
-#define SET_ALARM       (0x02)      /* Watch state (set alarm)*/
-#define ALARM_ON        (0x03)      /* Watch state (alarm is ringing)*/
-
-#define SEG_COL SEG11               /* Colon segment register */
-
-#define INT_CONSTPERIOD 0
-#define INT_ALARM 1
-
-#define IT_DELAY_ONESEC 8
-#define IT_DELAY_HALFSEC 4
-
-extern volatile uint8_t g_rtc_tick_flag;
-extern volatile uint8_t g_intp0_flag;
-
+#include "r_cg_macrodriver.h"
+#include "r_cg_timer.h"
+/* Start user code for include. Do not edit comment generated here */
 /* End user code. Do not edit comment generated here */
-#endif
+#include "r_cg_userdefine.h"
+
+/***********************************************************************************************************************
+Global variables and functions
+***********************************************************************************************************************/
+/* Start user code for global. Do not edit comment generated here */
+/* End user code. Do not edit comment generated here */
+
+/* Start user code for adding. Do not edit comment generated here */
+/* End user code. Do not edit comment generated here */

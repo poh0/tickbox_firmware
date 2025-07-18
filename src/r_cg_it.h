@@ -18,44 +18,52 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : r_cg_userdefine.h
+* File Name    : r_cg_it.h
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
 * Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
-* Description  : This file includes user definition.
+* Description  : This file implements device driver for IT module.
 * Creation Date: 17/07/2025
 ***********************************************************************************************************************/
 
-#ifndef _USER_DEF_H
-#define _USER_DEF_H
+#ifndef IT_H
+#define IT_H
 
 /***********************************************************************************************************************
-User definitions
+Macro definitions (Register bit)
+***********************************************************************************************************************/
+/*
+    Peripheral Enable Register 0 (PER0)
+*/
+/* Interval timer input clock supply (RTCEN) */
+#define _00_IT_CLOCK_STOP             (0x00U) /* stops supply of input clock */
+#define _80_IT_CLOCK_SUPPLY           (0x80U) /* supplies input clock */
+
+/* 
+    Interval timer control register (ITMC)
+*/
+/* Interval timer operation enable/disable specification (RINTE) */
+#define _0000_IT_OPERATION_DISABLE    (0x0000U) /* disable interval timer operation */
+#define _8000_IT_OPERATION_ENABLE     (0x8000U) /* enable interval timer operation */
+
+/***********************************************************************************************************************
+Macro definitions
+***********************************************************************************************************************/
+/* Interval timer compare value (ITMCMP11 - 0) */
+#define _0FFF_ITMCMP_VALUE            (0x0FFFU)
+
+/***********************************************************************************************************************
+Typedef definitions
 ***********************************************************************************************************************/
 
+/***********************************************************************************************************************
+Global functions
+***********************************************************************************************************************/
+void R_IT_Create(void);
+void R_IT_Start(void);
+void R_IT_Stop(void);
+
 /* Start user code for function. Do not edit comment generated here */
-void r_main_handle_intp0(void);
-
-
-#define WATCH_DISPLAY   (0x00)      /* Display state (normal time display) */
-#define HOUR_ADJUST     (0x01)      /* Display state (hour adjust) */
-#define MINUTE_ADJUST   (0x02)      /* Display state (minute adjust) */
-
-#define NORMAL_OP       (0x00)      /* Watch state (normal operation)*/
-#define SET_TIME        (0x01)      /* Watch state (set time)*/
-#define SET_ALARM       (0x02)      /* Watch state (set alarm)*/
-#define ALARM_ON        (0x03)      /* Watch state (alarm is ringing)*/
-
-#define SEG_COL SEG11               /* Colon segment register */
-
-#define INT_CONSTPERIOD 0
-#define INT_ALARM 1
-
-#define IT_DELAY_ONESEC 8
-#define IT_DELAY_HALFSEC 4
-
-extern volatile uint8_t g_rtc_tick_flag;
-extern volatile uint8_t g_intp0_flag;
-
+void R_IT_Delay(uint8_t ms_125_cnt);
 /* End user code. Do not edit comment generated here */
 #endif

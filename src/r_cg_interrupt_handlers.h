@@ -20,10 +20,10 @@
 /***********************************************************************************************************************
 * File Name    : r_cg_interrupt_handlers.h
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
-* Device(s)    : R5F10RLA
+* Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file declares interrupt handlers.
-* Creation Date: 10/07/2025
+* Creation Date: 17/07/2025
 ***********************************************************************************************************************/
 
 #ifndef INTERRUPT_HANDLERS_H_H
@@ -52,6 +52,8 @@ void r_intc2_interrupt(void) __attribute__ ((interrupt));
 void r_intc5_interrupt(void) __attribute__ ((interrupt));
 //0x30
 void r_rtc_interrupt(void) __attribute__ ((interrupt));
+//0x32
+void r_it_interrupt(void) __attribute__ ((interrupt));
 //Hardware Vectors
 //0x0
 void PowerON_Reset(void) __attribute__ ((interrupt));

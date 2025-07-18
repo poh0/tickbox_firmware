@@ -20,10 +20,10 @@
 /***********************************************************************************************************************
 * File Name    : r_cg_vector_table.c
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
-* Device(s)    : R5F10RLA
+* Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file implements interrupt vector.
-* Creation Date: 10/07/2025
+* Creation Date: 17/07/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -102,7 +102,7 @@ const void *Vectors[] VECT_SECT  = {
     // Address 0x30
     r_rtc_interrupt,
     // Address 0x32
-    R_Dummy,
+    r_it_interrupt,
     // Address 0x34
     R_Dummy,
     // Address 0x36

@@ -20,10 +20,10 @@
 /***********************************************************************************************************************
 * File Name    : r_cg_intc.h
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
-* Device(s)    : R5F10RLA
+* Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file implements device driver for INTC module.
-* Creation Date: 10/07/2025
+* Creation Date: 17/07/2025
 ***********************************************************************************************************************/
 
 #ifndef INTC_H

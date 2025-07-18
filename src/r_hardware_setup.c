@@ -20,10 +20,10 @@
 /***********************************************************************************************************************
 * File Name    : r_hardware_setup.c
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
-* Device(s)    : R5F10RLA
+* Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file implements system initializing function.
-* Creation Date: 10/07/2025
+* Creation Date: 17/07/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -34,6 +34,7 @@ Includes
 #include "r_cg_port.h"
 #include "r_cg_intc.h"
 #include "r_cg_rtc.h"
+#include "r_cg_it.h"
 #include "r_cg_pclbuz.h"
 #include "r_cg_lcd.h"
 /* Start user code for include. Do not edit comment generated here */
@@ -62,6 +63,7 @@ void R_Systeminit(void)
     R_CGC_Create();
     R_PORT_Create();
     R_RTC_Create();
+    R_IT_Create();
     R_INTC_Create();
     R_PCLBUZ0_Create();
     R_LCD_Create();

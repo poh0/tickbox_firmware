@@ -20,10 +20,10 @@
 /***********************************************************************************************************************
 * File Name    : r_cg_lcd_user.c
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
-* Device(s)    : R5F10RLA
+* Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file implements device driver for LCD module.
-* Creation Date: 10/07/2025
+* Creation Date: 17/07/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -145,6 +145,32 @@ void R_LCD_Display_Minutes(uint8_t minutes)
 void R_LCD_Display_Colon(void)
 {
 	SEG_COL |= 1u;
+}
+
+/* Zero out registers of a digit */
+static void empty_hour_tens_digit(void)
+{
+    uint8_t i;
+	for (i = 0; i < 7; i++)
+    {
+        *g_digit_seg_map[0][i] &= ~1u;
+    }
+}
+
+static void set_digit(uint8_t digit, uint8_t value)
+{
+	uint8_t i;
+	for (i = 0; i < 7; i++)
+	{
+		if ((g_digit_segments[value] >> i) & 1)
+		{
+			*g_digit_seg_map[digit][i] |= 1u;
+		}
+		else
+		{
+			*g_digit_seg_map[digit][i] &= ~1u;
+		}
+	}
 }
 
 /* End user code. Do not edit comment generated here */

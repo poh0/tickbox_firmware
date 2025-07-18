@@ -20,10 +20,10 @@
 /***********************************************************************************************************************
 * File Name    : r_cg_rtc.h
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
-* Device(s)    : R5F10RLA
+* Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file implements device driver for RTC module.
-* Creation Date: 10/07/2025
+* Creation Date: 17/07/2025
 ***********************************************************************************************************************/
 
 #ifndef RTC_H
@@ -142,13 +142,8 @@ void R_RTC_Start(void);
 void R_RTC_Stop(void);
 MD_STATUS R_RTC_Get_CounterValue(rtc_counter_value_t * const counter_read_val);
 MD_STATUS R_RTC_Set_CounterValue(rtc_counter_value_t counter_write_val);
-void R_RTC_Set_AlarmOn(void);
-void R_RTC_Set_AlarmOff(void);
-void R_RTC_Set_AlarmValue(rtc_alarm_value_t alarm_val);
-void R_RTC_Get_AlarmValue(rtc_alarm_value_t * const alarm_val);
 MD_STATUS R_RTC_Set_ConstPeriodInterruptOn(rtc_int_period_t period);
 void R_RTC_Set_ConstPeriodInterruptOff(void);
-static void r_rtc_callback_alarm(void);
 static void r_rtc_callback_constperiod(void);
 
 /* Start user code for function. Do not edit comment generated here */

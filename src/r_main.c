@@ -20,10 +20,10 @@
 /***********************************************************************************************************************
 * File Name    : r_main.c
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
-* Device(s)    : R5F10RLA
+* Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file implements main function.
-* Creation Date: 10/07/2025
+* Creation Date: 17/07/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -34,10 +34,10 @@ Includes
 #include "r_cg_port.h"
 #include "r_cg_intc.h"
 #include "r_cg_rtc.h"
+#include "r_cg_it.h"
 #include "r_cg_pclbuz.h"
 #include "r_cg_lcd.h"
 /* Start user code for include. Do not edit comment generated here */
-#include "r_cg_interrupt_handlers.h"
 /* End user code. Do not edit comment generated here */
 #include "r_cg_userdefine.h"
 
@@ -45,25 +45,23 @@ Includes
 Global variables and functions
 ***********************************************************************************************************************/
 /* Start user code for global. Do not edit comment generated here */
-uint8_t g_watch_state = 0;
-uint8_t g_alarm_is_set = 0;
-uint8_t g_minute, g_hour = 0;
+enum WatchState {
+	STATE_SET_ALARM,
+	STATE_SET_TIME,
+	STATE_NORMAL,
+	STATE_ALARM_ACTIVE
+} g_watch_state;
+static uint8_t g_minute = 0, g_hour = 0;
+static uint8_t g_alarm_minute = 0, g_alarm_hour = 0;
+static uint8_t beep_cnt = 0;
 rtc_counter_value_t g_time_data;
 
-void r_intc0_interrupt(void)
-{
+volatile uint8_t g_rtc_tick_flag = 0;
+volatile uint8_t g_intp0_flag = 0;
 
-}
-
-void r_intc2_interrupt(void)
-{
-
-}
-
-void r_intc5_interrupt(void)
-{
-
-}
+static void beep(uint8_t times);
+void r_main_handle_rtc(void);
+void r_main_handle_interrupt(void);
 
 /* End user code. Do not edit comment generated here */
 void R_MAIN_UserInit(void);
@@ -78,9 +76,20 @@ void main(void)
 {
     R_MAIN_UserInit();
     /* Start user code. Do not edit comment generated here */
+    NOP();
+    /* R_LCD_Display_Colon(); */
+    r_main_handle_rtc(); /* show 00:00 */
     while (1U)
     {
-        ;
+    	/* The assembly is EI; STOP;
+    	 * according to the software manual:
+    	 * No interrupts are acknowledged between EI and the next instruction.
+    	 * Meaning that pending interrupts will be ack'd after STOP instruction
+    	 * Which means that there will be no lost wakeups.
+    	 *  */
+        EI(); /* Enable interrupt acknowledgement */
+        STOP(); /* enter stop mode */
+        r_main_handle_interrupt(); /* We woke up because of an interrupt */
     }
     /* End user code. Do not edit comment generated here */
 }
@@ -95,9 +104,110 @@ void main(void)
 void R_MAIN_UserInit(void)
 {
     /* Start user code. Do not edit comment generated here */
-    EI();
+
+    g_watch_state = STATE_NORMAL; /* set state to normal operation */
+
+    g_minute = 0x00;
+    g_hour = 0x00;
+
+    /* Enable interrupts INTP0, INTP2 and INTP5 */
+    R_INTC0_Start();
+    R_RTC_Set_ConstPeriodInterruptOn(ONEMIN);   /* Enable RTC interrupt */
+    R_RTC_Start();                              /* Start RTC operation */
+
     /* End user code. Do not edit comment generated here */
 }
 
 /* Start user code for adding. Do not edit comment generated here */
+
+void r_main_handle_interrupt(void)
+{
+	DI(); /* No more ISRs until we enter STOP mode */
+    if (g_rtc_tick_flag)
+    {
+    	g_rtc_tick_flag = 0;
+        r_main_handle_rtc();
+    }
+
+    if (g_intp0_flag)
+    {
+    	g_intp0_flag = 0;
+    	P13 ^= 1U;
+    }
+}
+
+/* Handler for RTC interrupts */
+void r_main_handle_rtc(void)
+{
+	if (g_watch_state == STATE_NORMAL)
+	{
+		R_RTC_Get_CounterValue(&g_time_data);
+		g_hour = g_time_data.hour;
+		g_minute = g_time_data.min;
+
+		if (g_hour == g_alarm_hour && g_minute == g_alarm_minute)
+		{
+			/* TODO: check the switch, now defaulted to on */
+			if (1)
+			{
+				//g_watch_state = STATE_ALARM_ACTIVE;
+			}
+
+		}
+
+		/*
+		R_LCD_Display_Hours(g_hour);
+		R_LCD_Display_Minutes(g_minute);
+		*/
+	}
+	else if (g_watch_state == STATE_SET_TIME)
+	{
+		g_hour = g_time_data.hour;
+		g_minute = g_time_data.min;
+	}
+	else if (g_watch_state == STATE_SET_ALARM)
+	{
+		g_hour = g_time_data.hour;
+		g_minute = g_time_data.min;
+	}
+	else if (g_watch_state == STATE_ALARM_ACTIVE)
+	{
+		g_hour = g_time_data.hour;
+		g_minute = g_time_data.min;
+
+		/* Probably not gonna happen */
+		/*
+		R_LCD_Display_Hours(g_hour);
+		R_LCD_Display_Minutes(g_minute);
+		*/
+	}
+}
+
+/* Handler for INTP0 */
+void r_main_handle_intp0(void)
+{
+	if (g_watch_state == NORMAL_OP)
+	{
+		/* Enter set alarm */
+		beep(2);
+	}
+	else if (g_watch_state == SET_ALARM || g_watch_state == SET_TIME)
+	{
+		/* SWTICH BETWEEN MIN/HR */
+	}
+}
+
+static void beep(uint8_t times)
+{
+	uint8_t i;
+	for (i = 0; i < times; i++)
+	{
+		R_PCLBUZ0_Start();
+		R_IT_Delay(IT_DELAY_ONESEC); /* one second */
+		R_PCLBUZ0_Stop();
+		if (i < times - 1) R_IT_Delay(IT_DELAY_HALFSEC); /* one second */
+	}
+}
+
+
 /* End user code. Do not edit comment generated here */

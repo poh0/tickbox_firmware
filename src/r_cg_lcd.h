@@ -20,10 +20,10 @@
 /***********************************************************************************************************************
 * File Name    : r_cg_lcd.h
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
-* Device(s)    : R5F10RLA
+* Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file implements device driver for LCD module.
-* Creation Date: 10/07/2025
+* Creation Date: 17/07/2025
 ***********************************************************************************************************************/
 
 #ifndef LCD_H
@@ -152,5 +152,9 @@ void R_LCD_Set_VoltageOn(void);
 void R_LCD_Set_VoltageOff(void);
 
 /* Start user code for function. Do not edit comment generated here */
+void R_LCD_Init_Segments(void);
+void R_LCD_Display_Hours(uint8_t hour);
+void R_LCD_Display_Minutes(uint8_t minutes);
+void R_LCD_Display_Colon(void);
 /* End user code. Do not edit comment generated here */
 #endif

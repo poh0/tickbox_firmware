@@ -20,10 +20,10 @@
 /***********************************************************************************************************************
 * File Name    : r_cg_rtc_user.c
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
-* Device(s)    : R5F10RLA
+* Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file implements device driver for RTC module.
-* Creation Date: 10/07/2025
+* Creation Date: 17/07/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -49,12 +49,6 @@ Global variables and functions
 ***********************************************************************************************************************/
 void r_rtc_interrupt(void)
 {
-    if (1U == WAFG)
-    {
-        RTCC1 &= (uint8_t)~_10_RTC_ALARM_MATCH;        /* clear WAFG */
-        r_rtc_callback_alarm();
-    }
-
     if (1U == RIFG)
     {
         RTCC1 &= (uint8_t)~_08_RTC_INTC_GENERATE_FLAG;    /* clear RIFG */
@@ -71,18 +65,7 @@ void r_rtc_interrupt(void)
 static void r_rtc_callback_constperiod(void)
 {
     /* Start user code. Do not edit comment generated here */
-    /* End user code. Do not edit comment generated here */
-}
-
-/***********************************************************************************************************************
-* Function Name: r_rtc_callback_alarm
-* Description  : This function is alarm interrupt service handler.
-* Arguments    : None
-* Return Value : None
-***********************************************************************************************************************/
-static void r_rtc_callback_alarm(void)
-{
-    /* Start user code. Do not edit comment generated here */
+	g_rtc_tick_flag = 1U;
     /* End user code. Do not edit comment generated here */
 }
 

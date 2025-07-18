@@ -20,11 +20,11 @@ SECTIONS
 	{
 		KEEP(*(.vects))
 	} > IVEC
-	.option_bytes 0xC0: AT(0xC0)
+	.option_bytes 0xc0 : AT(0xc0)
 	{
 		KEEP(*(.option_bytes))
 	} > OPT
-	.security_id 0xC4: AT(0xC4)
+	.security_id 0xc4 : AT(0xc4)
 	{
 		KEEP(*(.security_id))
 	} > SEC_ID
