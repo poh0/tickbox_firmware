@@ -23,7 +23,7 @@
 * Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file implements device driver for PORT module.
-* Creation Date: 17/07/2025
+* Creation Date: 21/07/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -50,13 +50,16 @@ Global variables and functions
 void R_PORT_Create(void)
 {
     PFSEG0 = _00_PFSEG04_PORT | _20_PFSEG05_SEG | _40_PFSEG06_SEG | _80_PFSEG07_SEG;
+    ISCLCD = _01_ISCCAP_INPUT_EFFECTIVE;
     P2 = _00_Pn0_OUTPUT_0 | _00_Pn1_OUTPUT_0;
+    P12 = _40_Pn6_OUTPUT_1;
     P13 = _01_Pn0_OUTPUT_1;
-    PU12 = _20_PUn5_PULLUP_ON | _40_PUn6_PULLUP_ON | _80_PUn7_PULLUP_ON;
+    PU12 = _20_PUn5_PULLUP_ON | _80_PUn7_PULLUP_ON;
     ADPC = _01_ADPC_DI_ON;
     PM1 = _01_PMn0_NOT_USE | _02_PMn1_NOT_USE | _04_PMn2_NOT_USE | _08_PMn3_NOT_USE | _10_PMn4_NOT_USE |
           _20_PMn5_MODE_INPUT | _40_PMn6_NOT_USE | _80_PMn7_NOT_USE;
     PM2 = _00_PMn0_MODE_OUTPUT | _00_PMn1_MODE_OUTPUT | _FC_PM2_DEFAULT;
+    PM12 = _01_PMn0_NOT_USE | _20_PMn5_NOT_USE | _00_PMn6_MODE_OUTPUT | _80_PMn7_MODE_INPUT | _1E_PM12_DEFAULT;
 }
 
 /* Start user code for adding. Do not edit comment generated here */

@@ -23,7 +23,7 @@
 * Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file implements device driver for IT module.
-* Creation Date: 17/07/2025
+* Creation Date: 21/07/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -39,17 +39,6 @@ Includes
 Global variables and functions
 ***********************************************************************************************************************/
 /* Start user code for global. Do not edit comment generated here */
-void R_IT_Delay(uint8_t ms_125_cnt)
-{
-	R_IT_Start();
-	uint8_t i;
-	for (i = 0; i < ms_125_cnt; i++)
-	{
-		STOP(); /* enter stop mode */
-		ITIF = 0U; /* clear IT interrupt flag */
-	}
-	R_IT_Stop();
-}
 /* End user code. Do not edit comment generated here */
 
 /***********************************************************************************************************************
@@ -61,6 +50,7 @@ void R_IT_Delay(uint8_t ms_125_cnt)
 void r_it_interrupt(void)
 {
     /* Start user code. Do not edit comment generated here */
+	g_it_flag = 1U;
     /* End user code. Do not edit comment generated here */
 }
 

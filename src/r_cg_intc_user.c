@@ -23,7 +23,7 @@
 * Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file implements device driver for INTC module.
-* Creation Date: 17/07/2025
+* Creation Date: 21/07/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -63,6 +63,7 @@ void r_intc0_interrupt(void)
 void r_intc2_interrupt(void)
 {
     /* Start user code. Do not edit comment generated here */
+	g_intp2_flag = 1U;
     /* End user code. Do not edit comment generated here */
 }
 
@@ -75,6 +76,7 @@ void r_intc2_interrupt(void)
 void r_intc5_interrupt(void)
 {
     /* Start user code. Do not edit comment generated here */
+	g_intp5_flag = 1U;
     /* End user code. Do not edit comment generated here */
 }
 

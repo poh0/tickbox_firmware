@@ -23,7 +23,7 @@
 * Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file implements main function.
-* Creation Date: 17/07/2025
+* Creation Date: 21/07/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -45,23 +45,41 @@ Includes
 Global variables and functions
 ***********************************************************************************************************************/
 /* Start user code for global. Do not edit comment generated here */
+
+/* 125ms * 300 */
+#define ALARM_LENGHT 300
+
 enum WatchState {
 	STATE_SET_ALARM,
 	STATE_SET_TIME,
 	STATE_NORMAL,
 	STATE_ALARM_ACTIVE
 } g_watch_state;
+
 static uint8_t g_minute = 0, g_hour = 0;
-static uint8_t g_alarm_minute = 0, g_alarm_hour = 0;
-static uint8_t beep_cnt = 0;
+static uint8_t g_alarm_min = 0, g_alarm_hour = 0;
+
+static uint8_t g_timer_cnt = 0;
 rtc_counter_value_t g_time_data;
 
+static uint8_t g_adjust_state = 0;
+
+/* INTERRUPT FLAGS */
 volatile uint8_t g_rtc_tick_flag = 0;
 volatile uint8_t g_intp0_flag = 0;
+volatile uint8_t g_intp2_flag = 0;
+volatile uint8_t g_intp5_flag = 0;
+volatile uint8_t g_it_flag = 0;
+volatile uint8_t g_rtc_alarm_flag = 0;
+/* -------------------- */
 
-static void beep(uint8_t times);
 void r_main_handle_rtc(void);
 void r_main_handle_interrupt(void);
+static void handle_timer(void);
+static void alarm_stop(void);
+static void alarm_start(void);
+
+static uint8_t is_alarm_on(void);
 
 /* End user code. Do not edit comment generated here */
 void R_MAIN_UserInit(void);
@@ -77,7 +95,7 @@ void main(void)
     R_MAIN_UserInit();
     /* Start user code. Do not edit comment generated here */
     NOP();
-    /* R_LCD_Display_Colon(); */
+    R_LCD_Display_Colon();
     r_main_handle_rtc(); /* show 00:00 */
     while (1U)
     {
@@ -109,9 +127,18 @@ void R_MAIN_UserInit(void)
 
     g_minute = 0x00;
     g_hour = 0x00;
+    g_alarm_min = 0x00;
+    g_alarm_hour = 0x00;
+
+    /* Start LCD */
+    R_LCD_Set_VoltageOn();
+    R_LCD_Start();
 
     /* Enable interrupts INTP0, INTP2 and INTP5 */
     R_INTC0_Start();
+    R_INTC2_Start();
+    R_INTC5_Start();
+
     R_RTC_Set_ConstPeriodInterruptOn(ONEMIN);   /* Enable RTC interrupt */
     R_RTC_Start();                              /* Start RTC operation */
 
@@ -123,91 +150,220 @@ void R_MAIN_UserInit(void)
 void r_main_handle_interrupt(void)
 {
 	DI(); /* No more ISRs until we enter STOP mode */
+
     if (g_rtc_tick_flag)
     {
     	g_rtc_tick_flag = 0;
         r_main_handle_rtc();
     }
 
+    if (g_rtc_alarm_flag)
+    {
+    	g_rtc_alarm_flag = 0;
+
+    	if (is_alarm_on() && g_watch_state == STATE_NORMAL)
+    	{
+    		alarm_start();
+    	}
+
+    	r_main_handle_rtc();
+    }
+
     if (g_intp0_flag)
     {
     	g_intp0_flag = 0;
-    	P13 ^= 1U;
+
+    	if (g_watch_state == STATE_NORMAL)
+    	{
+    		g_watch_state = STATE_SET_ALARM;
+			g_adjust_state = MINUTE_ADJUST;
+			R_LCD_Display_Hours(g_alarm_hour);
+			R_LCD_Display_Minutes(g_alarm_min);
+    	}
+
+    	else if (g_watch_state == STATE_SET_TIME)
+    	{
+    		if (g_adjust_state == MINUTE_ADJUST)
+    		{
+        		R_RTC_Get_CounterValue(&g_time_data);
+        		g_time_data.hour = g_hour;
+        		g_time_data.min = g_minute;
+        		R_RTC_Set_CounterValue(g_time_data);
+        		g_watch_state = STATE_NORMAL;
+    		}
+    		else if (g_adjust_state == HOUR_ADJUST)
+    		{
+    			g_adjust_state = MINUTE_ADJUST;
+    		}
+
+    	}
+
+    	else if (g_watch_state == STATE_SET_ALARM)
+    	{
+    		if (g_adjust_state == MINUTE_ADJUST)
+    		{
+    			rtc_alarm_value_t alarm_val = {
+    					.alarmww = 0b01111111,
+						.alarmwh = g_alarm_hour,
+						.alarmwm = g_alarm_min
+    			};
+    			R_RTC_SetAlarmValue(alarm_val);
+        		g_watch_state = STATE_NORMAL;
+    		}
+    		else if (g_adjust_state == HOUR_ADJUST)
+    		{
+    			g_adjust_state = MINUTE_ADJUST;
+    		}
+
+    	}
+    }
+
+    /* INTP2 - Snooze / backlight */
+    if (g_intp2_flag)
+    {
+    	g_intp2_flag = 0;
+
+    	if (g_watch_state == STATE_ALARM_ACTIVE)
+    	{
+    		alarm_stop();
+    	}
+    }
+
+    /* INTP5 - SET TIME / +1 */
+    if (g_intp5_flag)
+    {
+    	g_intp5_flag = 0;
+
+    	if (g_watch_state == STATE_NORMAL)
+    	{
+    		g_adjust_state = HOUR_ADJUST;
+    		g_watch_state = STATE_SET_TIME;
+    	}
+    	else if (g_watch_state == STATE_SET_TIME)
+    	{
+    		if (g_adjust_state == HOUR_ADJUST)
+    		{
+    			if (++g_hour >= 24)
+    			{
+    				g_hour = 0;
+    			}
+    			R_LCD_Display_Hours(g_hour);
+    		}
+    		else if (g_adjust_state == MINUTE_ADJUST)
+    		{
+    			if (++g_minute >= 60)
+    			{
+    				g_minute = 0;
+    			}
+    			R_LCD_Display_Minutes(g_minute);
+    		}
+    	}
+    	else if (g_watch_state == STATE_SET_ALARM)
+    	{
+    		if (g_adjust_state == HOUR_ADJUST)
+    		{
+    			if (++g_alarm_hour >= 24)
+    			{
+    				g_alarm_hour = 0;
+    			}
+    			R_LCD_Display_Hours(g_alarm_hour);
+    		}
+    		else if (g_adjust_state == MINUTE_ADJUST)
+    		{
+    			if (++g_alarm_min >= 60)
+    			{
+    				g_alarm_min = 0;
+    			}
+    			R_LCD_Display_Minutes(g_alarm_min);
+    		}
+    	}
+    }
+
+    /* Handle interval timer interrupt */
+    if(g_it_flag)
+    {
+    	g_it_flag = 0;
+    	handle_timer();
     }
 }
 
 /* Handler for RTC interrupts */
 void r_main_handle_rtc(void)
 {
-	if (g_watch_state == STATE_NORMAL)
+	if (g_watch_state == STATE_NORMAL || g_watch_state == STATE_ALARM_ACTIVE)
 	{
 		R_RTC_Get_CounterValue(&g_time_data);
 		g_hour = g_time_data.hour;
 		g_minute = g_time_data.min;
-
-		if (g_hour == g_alarm_hour && g_minute == g_alarm_minute)
-		{
-			/* TODO: check the switch, now defaulted to on */
-			if (1)
-			{
-				//g_watch_state = STATE_ALARM_ACTIVE;
-			}
-
-		}
-
-		/*
 		R_LCD_Display_Hours(g_hour);
 		R_LCD_Display_Minutes(g_minute);
-		*/
 	}
 	else if (g_watch_state == STATE_SET_TIME)
 	{
-		g_hour = g_time_data.hour;
-		g_minute = g_time_data.min;
+		/**/
 	}
 	else if (g_watch_state == STATE_SET_ALARM)
 	{
-		g_hour = g_time_data.hour;
-		g_minute = g_time_data.min;
-	}
-	else if (g_watch_state == STATE_ALARM_ACTIVE)
-	{
-		g_hour = g_time_data.hour;
-		g_minute = g_time_data.min;
-
-		/* Probably not gonna happen */
-		/*
-		R_LCD_Display_Hours(g_hour);
-		R_LCD_Display_Minutes(g_minute);
-		*/
+		/**/
 	}
 }
 
-/* Handler for INTP0 */
-void r_main_handle_intp0(void)
+static void alarm_start(void)
 {
-	if (g_watch_state == NORMAL_OP)
-	{
-		/* Enter set alarm */
-		beep(2);
-	}
-	else if (g_watch_state == SET_ALARM || g_watch_state == SET_TIME)
-	{
-		/* SWTICH BETWEEN MIN/HR */
-	}
+	g_watch_state = STATE_ALARM_ACTIVE;
+	g_timer_cnt = 0;
+
+	/* Play 4khz buzzer sound */
+	R_PCLBUZ0_Start();
+	/* Start 125 ms timer */
+	R_IT_Start();
 }
 
-static void beep(uint8_t times)
+static void alarm_stop(void)
 {
-	uint8_t i;
-	for (i = 0; i < times; i++)
-	{
-		R_PCLBUZ0_Start();
-		R_IT_Delay(IT_DELAY_ONESEC); /* one second */
-		R_PCLBUZ0_Stop();
-		if (i < times - 1) R_IT_Delay(IT_DELAY_HALFSEC); /* one second */
-	}
+	g_watch_state = STATE_NORMAL;
+	/* Stop buzzer */
+	R_PCLBUZ0_Stop();
+	/* Stop interval timer */
+	R_IT_Stop();
 }
 
+static void handle_timer(void)
+{
+	if (g_timer_cnt == ALARM_LENGHT)
+	{
+		alarm_stop();
+	}
+
+	/* BEEP pause BEEP pause pause*/
+	g_timer_cnt++;
+    switch (g_timer_cnt % 5) {
+        case 0:
+        case 2:
+            R_PCLBUZ0_Start();
+            break;
+        case 3:
+            R_PCLBUZ0_Stop();
+            break;
+    }
+}
+
+static uint8_t is_alarm_on(void)
+{
+	ALARM_SWOUT = 0;
+
+	if (ALARM_SWIN)
+	{
+		/* switch is open, no alarm*/
+		ALARM_SWOUT = 1U;
+		return 0;
+	}
+	else
+	{
+		/* Switch is closed, play alarm */
+		ALARM_SWOUT = 1U;
+		return 1;
+	}
+}
 
 /* End user code. Do not edit comment generated here */
