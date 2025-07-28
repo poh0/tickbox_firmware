@@ -23,7 +23,7 @@
 * Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file implements device driver for PCLBUZ module.
-* Creation Date: 21/07/2025
+* Creation Date: 28/07/2025
 ***********************************************************************************************************************/
 
 #ifndef PCLBUZ_H

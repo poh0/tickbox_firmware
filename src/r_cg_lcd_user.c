@@ -23,7 +23,7 @@
 * Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file implements device driver for LCD module.
-* Creation Date: 21/07/2025
+* Creation Date: 28/07/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -61,7 +61,7 @@ static volatile uint8_t* const g_digit_seg_map[4][7] = {
   { &SEG2, &SEG3, &SEG24, &SEG23, &SEG22, &SEG1, &SEG0 }, // Digit 0
   { &SEG9, &SEG10, &SEG28, &SEG26, &SEG25, &SEG8, &SEG6 }, // Digit 1
   { &SEG14, &SEG15, &SEG33, &SEG32, &SEG31, &SEG13, &SEG12 }, // Digit 2
-  { &SEG18, &SEG37, &SEG36, &SEG35, &SEG34, &SEG17, &SEG16 } // Digit 3
+  { &SEG19, &SEG37, &SEG36, &SEG35, &SEG34, &SEG18, &SEG16 } // Digit 3
 }; /* should this be volatile ?*/
 
 

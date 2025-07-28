@@ -23,7 +23,7 @@
 * Device(s)    : R5F10RLC
 * Tool-Chain   : GCCRL78
 * Description  : This file implements main function.
-* Creation Date: 21/07/2025
+* Creation Date: 28/07/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -49,7 +49,7 @@ Global variables and functions
 /* 125ms * 300 */
 #define ALARM_LENGHT 300
 
-enum WatchState {
+enum watch_state_t {
 	STATE_SET_ALARM,
 	STATE_SET_TIME,
 	STATE_NORMAL,
@@ -59,7 +59,7 @@ enum WatchState {
 static uint8_t g_minute = 0, g_hour = 0;
 static uint8_t g_alarm_min = 0, g_alarm_hour = 0;
 
-static uint8_t g_timer_cnt = 0;
+static uint16_t g_timer_cnt = 0;
 rtc_counter_value_t g_time_data;
 
 static uint8_t g_adjust_state = 0;
@@ -136,7 +136,7 @@ void R_MAIN_UserInit(void)
 
     /* Enable interrupts INTP0, INTP2 and INTP5 */
     R_INTC0_Start();
-    R_INTC2_Start();
+    /*R_INTC2_Start();*/
     R_INTC5_Start();
 
     R_RTC_Set_ConstPeriodInterruptOn(ONEMIN);   /* Enable RTC interrupt */
@@ -176,7 +176,7 @@ void r_main_handle_interrupt(void)
     	if (g_watch_state == STATE_NORMAL)
     	{
     		g_watch_state = STATE_SET_ALARM;
-			g_adjust_state = MINUTE_ADJUST;
+			g_adjust_state = HOUR_ADJUST;
 			R_LCD_Display_Hours(g_alarm_hour);
 			R_LCD_Display_Minutes(g_alarm_min);
     	}
@@ -185,10 +185,11 @@ void r_main_handle_interrupt(void)
     	{
     		if (g_adjust_state == MINUTE_ADJUST)
     		{
-        		R_RTC_Get_CounterValue(&g_time_data);
-        		g_time_data.hour = g_hour;
-        		g_time_data.min = g_minute;
-        		R_RTC_Set_CounterValue(g_time_data);
+        		rtc_counter_value_t time_data;
+        		time_data.sec = 0x00;
+        		time_data.hour = g_hour;
+        		time_data.min = g_minute;
+        		R_RTC_Set_CounterValue(time_data);
         		g_watch_state = STATE_NORMAL;
     		}
     		else if (g_adjust_state == HOUR_ADJUST)
@@ -207,8 +208,10 @@ void r_main_handle_interrupt(void)
 						.alarmwh = g_alarm_hour,
 						.alarmwm = g_alarm_min
     			};
-    			R_RTC_SetAlarmValue(alarm_val);
+    			R_RTC_Set_AlarmValue(alarm_val);
         		g_watch_state = STATE_NORMAL;
+    			R_LCD_Display_Hours(g_hour);
+    			R_LCD_Display_Minutes(g_minute);
     		}
     		else if (g_adjust_state == HOUR_ADJUST)
     		{
@@ -292,9 +295,14 @@ void r_main_handle_rtc(void)
 {
 	if (g_watch_state == STATE_NORMAL || g_watch_state == STATE_ALARM_ACTIVE)
 	{
-		R_RTC_Get_CounterValue(&g_time_data);
-		g_hour = g_time_data.hour;
-		g_minute = g_time_data.min;
+		if (++g_minute >= 60)
+		{
+			g_minute = 0;
+			if (++g_hour >= 24)
+			{
+				g_hour = 0;
+			}
+		}
 		R_LCD_Display_Hours(g_hour);
 		R_LCD_Display_Minutes(g_minute);
 	}
@@ -350,6 +358,7 @@ static void handle_timer(void)
 
 static uint8_t is_alarm_on(void)
 {
+	return 1; /* for dev purposes */
 	ALARM_SWOUT = 0;
 
 	if (ALARM_SWIN)

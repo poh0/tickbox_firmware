@@ -25,7 +25,7 @@
 //* Device(s)    : R5F10RLC
 //* Tool-Chain   : gccrl78
 //* Description  : This is start up file for RL78.
-//* Creation Date: 21/07/2025
+//* Creation Date: 28/07/2025
 //**********************************************************************************************************************
 //*/
 
