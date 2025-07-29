@@ -56,8 +56,8 @@ enum watch_state_t {
 	STATE_ALARM_ACTIVE
 } g_watch_state;
 
-static uint8_t g_minute = 0, g_hour = 0;
-static uint8_t g_alarm_min = 0, g_alarm_hour = 0;
+static uint8_t g_min_bcd = 0, g_hour_bcd = 0;
+static uint8_t g_alarm_min_bcd = 0, g_alarm_hour_bcd = 0;
 
 static uint16_t g_timer_cnt = 0;
 rtc_counter_value_t g_time_data;
@@ -125,10 +125,10 @@ void R_MAIN_UserInit(void)
 
     g_watch_state = STATE_NORMAL; /* set state to normal operation */
 
-    g_minute = 0x00;
-    g_hour = 0x00;
-    g_alarm_min = 0x00;
-    g_alarm_hour = 0x00;
+    g_min_bcd = 0x00;
+    g_hour_bcd = 0x00;
+    g_alarm_min_bcd = 0x00;
+    g_alarm_hour_bcd = 0x00;
 
     /* Start LCD */
     R_LCD_Set_VoltageOn();
@@ -177,8 +177,8 @@ void r_main_handle_interrupt(void)
     	{
     		g_watch_state = STATE_SET_ALARM;
 			g_adjust_state = HOUR_ADJUST;
-			R_LCD_Display_Hours(g_alarm_hour);
-			R_LCD_Display_Minutes(g_alarm_min);
+			R_LCD_Display_Hours(g_alarm_hour_bcd);
+			R_LCD_Display_Minutes(g_alarm_min_bcd);
     	}
 
     	else if (g_watch_state == STATE_SET_TIME)
@@ -187,8 +187,8 @@ void r_main_handle_interrupt(void)
     		{
         		rtc_counter_value_t time_data;
         		time_data.sec = 0x00;
-        		time_data.hour = g_hour;
-        		time_data.min = g_minute;
+        		time_data.hour = g_hour_bcd;
+        		time_data.min = g_min_bcd;
         		R_RTC_Set_CounterValue(time_data);
         		g_watch_state = STATE_NORMAL;
     		}
@@ -203,15 +203,14 @@ void r_main_handle_interrupt(void)
     	{
     		if (g_adjust_state == MINUTE_ADJUST)
     		{
-    			rtc_alarm_value_t alarm_val = {
-    					.alarmww = 0b01111111,
-						.alarmwh = g_alarm_hour,
-						.alarmwm = g_alarm_min
-    			};
+    			rtc_alarm_value_t alarm_val = {};
+    			alarm_val.alarmwh = g_alarm_hour_bcd;
+    			alarm_val.alarmwm = g_alarm_min_bcd;
+    			alarm_val.alarmww = 0b01111111; /* Every day of week */
     			R_RTC_Set_AlarmValue(alarm_val);
         		g_watch_state = STATE_NORMAL;
-    			R_LCD_Display_Hours(g_hour);
-    			R_LCD_Display_Minutes(g_minute);
+    			R_LCD_Display_Hours(g_hour_bcd);
+    			R_LCD_Display_Minutes(g_min_bcd);
     		}
     		else if (g_adjust_state == HOUR_ADJUST)
     		{
@@ -246,38 +245,42 @@ void r_main_handle_interrupt(void)
     	{
     		if (g_adjust_state == HOUR_ADJUST)
     		{
-    			if (++g_hour >= 24)
+    			g_hour_bcd = inc_bcd(g_hour_bcd);
+    			if (g_hour_bcd >= 0x24)
     			{
-    				g_hour = 0;
+    				g_hour_bcd = 0x00;
     			}
-    			R_LCD_Display_Hours(g_hour);
+    			R_LCD_Display_Hours(g_hour_bcd);
     		}
     		else if (g_adjust_state == MINUTE_ADJUST)
     		{
-    			if (++g_minute >= 60)
+    			g_min_bcd = inc_bcd(g_min_bcd);
+    			if (g_min_bcd >= 0x60)
     			{
-    				g_minute = 0;
+    				g_min_bcd = 0x00;
     			}
-    			R_LCD_Display_Minutes(g_minute);
+    			R_LCD_Display_Minutes(g_min_bcd);
     		}
     	}
     	else if (g_watch_state == STATE_SET_ALARM)
     	{
     		if (g_adjust_state == HOUR_ADJUST)
     		{
-    			if (++g_alarm_hour >= 24)
+    			g_alarm_hour_bcd = inc_bcd(g_alarm_hour_bcd);
+    			if (g_alarm_hour_bcd >= 0x24)
     			{
-    				g_alarm_hour = 0;
+    				g_alarm_hour_bcd = 0x00;
     			}
-    			R_LCD_Display_Hours(g_alarm_hour);
+    			R_LCD_Display_Hours(g_alarm_hour_bcd);
     		}
     		else if (g_adjust_state == MINUTE_ADJUST)
     		{
-    			if (++g_alarm_min >= 60)
+    			g_alarm_min_bcd = inc_bcd(g_alarm_min_bcd);
+    			if (g_alarm_min_bcd >= 0x60)
     			{
-    				g_alarm_min = 0;
+    				g_alarm_min_bcd = 0x00;
     			}
-    			R_LCD_Display_Minutes(g_alarm_min);
+    			R_LCD_Display_Minutes(g_alarm_min_bcd);
     		}
     	}
     }
@@ -295,24 +298,32 @@ void r_main_handle_rtc(void)
 {
 	if (g_watch_state == STATE_NORMAL || g_watch_state == STATE_ALARM_ACTIVE)
 	{
-		if (++g_minute >= 60)
+		rtc_counter_value_t time_data;
+		if (R_RTC_Get_CounterValue(&time_data) == MD_OK)
 		{
-			g_minute = 0;
-			if (++g_hour >= 24)
-			{
-				g_hour = 0;
-			}
+			g_hour_bcd = time_data.hour;
+			g_min_bcd = time_data.min;
 		}
-		R_LCD_Display_Hours(g_hour);
-		R_LCD_Display_Minutes(g_minute);
+		else
+		{
+			/* */
+		}
+
+		R_LCD_Display_Hours(g_hour_bcd);
+		R_LCD_Display_Minutes(g_min_bcd);
 	}
 	else if (g_watch_state == STATE_SET_TIME)
 	{
-		/**/
+		/* do nothing */
 	}
 	else if (g_watch_state == STATE_SET_ALARM)
 	{
-		/**/
+		rtc_counter_value_t time_data;
+		if (R_RTC_Get_CounterValue(&time_data) == MD_OK)
+		{
+			g_hour_bcd = time_data.hour;
+			g_min_bcd = time_data.min;
+		}
 	}
 }
 
@@ -373,6 +384,19 @@ static uint8_t is_alarm_on(void)
 		ALARM_SWOUT = 1U;
 		return 1;
 	}
+}
+
+static uint8_t inc_bcd(uint8_t bcd_data)
+{
+    // Increment the lower nibble
+    bcd_data += 1U;
+
+    // If the lower nibble is goes to 0xA, increment upper nibble.
+    if ((bcd_data & 0x0F) > 0x09) {
+        bcd_data += 0x06;
+    }
+
+    return bcd_data;
 }
 
 /* End user code. Do not edit comment generated here */

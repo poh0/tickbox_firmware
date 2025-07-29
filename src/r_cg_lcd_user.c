@@ -91,22 +91,20 @@ void R_LCD_Init_Segments(void)
 * Arguments    : hour - number 00-23 to be shown on the display
 * Return Value : None
 ***********************************************************************************************************************/
-void R_LCD_Display_Hours(uint8_t hour)
+void R_LCD_Display_Hours(uint8_t hour_bcd)
 {
-    if (hour > 23)
-    {
-        return;
-    }
+	const uint8_t hour_tens = hour_bcd >> 4;
+	const uint8_t hour_ones = hour_bcd & 0xF;
 
-    if (hour < 10)
+    if (hour_tens == 0)
     {
     	empty_hour_tens_digit();
-    	set_digit(1, hour);
+    	set_digit(1, hour_ones);
     }
     else
     {
-    	set_digit(0, hour / 10);
-    	set_digit(1, hour % 10);
+    	set_digit(0, hour_tens);
+    	set_digit(1, hour_ones);
     }
 
 }
@@ -117,23 +115,13 @@ void R_LCD_Display_Hours(uint8_t hour)
 * Arguments    : minutes - number 0 to 59 to be shown on the display
 * Return Value : None
 ***********************************************************************************************************************/
-void R_LCD_Display_Minutes(uint8_t minutes)
+void R_LCD_Display_Minutes(uint8_t minutes_bcd)
 {
-    if (minutes > 59)
-    {
-        return;
-    }
+	const uint8_t min_tens = minutes_bcd >> 4;
+	const uint8_t min_ones = minutes_bcd & 0xF;
 
-    if (minutes < 10)
-    {
-    	set_digit(2, 0);
-    	set_digit(3, minutes);
-    }
-    else
-    {
-    	set_digit(2, minutes / 10);
-    	set_digit(3, minutes % 10);
-    }
+	set_digit(2, min_tens);
+	set_digit(3, min_ones);
 }
 
 /***********************************************************************************************************************
