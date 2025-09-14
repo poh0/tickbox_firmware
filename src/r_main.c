@@ -80,6 +80,7 @@ static void alarm_stop(void);
 static void alarm_start(void);
 
 static uint8_t is_alarm_on(void);
+static uint8_t inc_bcd(uint8_t bcd_data);
 
 /* End user code. Do not edit comment generated here */
 void R_MAIN_UserInit(void);
@@ -203,7 +204,7 @@ void r_main_handle_interrupt(void)
     	{
     		if (g_adjust_state == MINUTE_ADJUST)
     		{
-    			rtc_alarm_value_t alarm_val = {};
+    			rtc_alarm_value_t alarm_val;
     			alarm_val.alarmwh = g_alarm_hour_bcd;
     			alarm_val.alarmwm = g_alarm_min_bcd;
     			alarm_val.alarmww = 0b01111111; /* Every day of week */
@@ -389,7 +390,7 @@ static uint8_t is_alarm_on(void)
 static uint8_t inc_bcd(uint8_t bcd_data)
 {
     // Increment the lower nibble
-    bcd_data += 1U;
+    bcd_data++;
 
     // If the lower nibble is goes to 0xA, increment upper nibble.
     if ((bcd_data & 0x0F) > 0x09) {
