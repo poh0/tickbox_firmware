@@ -52,6 +52,8 @@ void r_intc2_interrupt(void) __attribute__ ((interrupt));
 void r_intc5_interrupt(void) __attribute__ ((interrupt));
 //0x30
 void r_rtc_interrupt(void) __attribute__ ((interrupt));
+//0x32
+void r_it_interrupt(void) __attribute__ ((interrupt));
 //Hardware Vectors
 //0x0
 void PowerON_Reset(void) __attribute__ ((interrupt));

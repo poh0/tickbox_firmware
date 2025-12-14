@@ -18,41 +18,41 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : r_cg_userdefine.h
+* File Name    : r_cg_it_user.c
 * Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
 * Device(s)    : R5F10RLA
 * Tool-Chain   : GCCRL78
-* Description  : This file includes user definition.
-* Creation Date: 10/07/2025
+* Description  : This file implements device driver for IT module.
+* Creation Date: 28/07/2025
 ***********************************************************************************************************************/
-
-#ifndef _USER_DEF_H
-#define _USER_DEF_H
 
 /***********************************************************************************************************************
-User definitions
+Includes
 ***********************************************************************************************************************/
-
-/* Start user code for function. Do not edit comment generated here */
-
-#define HOUR_ADJUST     (0x00)      /* Selection state (hour adjust) */
-#define MINUTE_ADJUST   (0x01)      /* Selectrio state (minute adjust) */
-
-#define SEG_COL SEG11               /* Colon segment register */
-
-#define ALARM_SWOUT P12_bit.no6		/* Alarm switch output pin */
-#define ALARM_SWIN P12_bit.no7		/* Alarm switch input pin */
-
-#define ALARM_EVERYDAY 0b1111111;
-
-/* GLOBAL INTERRUPT FLAGS */
-extern volatile uint8_t g_rtc_tick_flag;
-extern volatile uint8_t g_rtc_alarm_flag;
-extern volatile uint8_t g_intp0_flag;
-extern volatile uint8_t g_intp2_flag;
-extern volatile uint8_t g_intp5_flag;
-extern volatile uint8_t g_it_flag;
-/* ----------------------- */
-
+#include "r_cg_macrodriver.h"
+#include "r_cg_it.h"
+/* Start user code for include. Do not edit comment generated here */
 /* End user code. Do not edit comment generated here */
-#endif
+#include "r_cg_userdefine.h"
+
+/***********************************************************************************************************************
+Global variables and functions
+***********************************************************************************************************************/
+/* Start user code for global. Do not edit comment generated here */
+/* End user code. Do not edit comment generated here */
+
+/***********************************************************************************************************************
+* Function Name: r_it_interrupt
+* Description  : This function is INTIT interrupt service routine.
+* Arguments    : None
+* Return Value : None
+***********************************************************************************************************************/
+void r_it_interrupt(void)
+{
+    /* Start user code. Do not edit comment generated here */
+	g_it_flag = 1U;
+    /* End user code. Do not edit comment generated here */
+}
+
+/* Start user code for adding. Do not edit comment generated here */
+/* End user code. Do not edit comment generated here */

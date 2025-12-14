@@ -51,7 +51,7 @@ void R_PCLBUZ0_Create(void)
 {
     RTCEN = 1U;    /* supply PCLBUZ0 clock */
     PCLOE0 = 0U;   /* disable PCLBUZ0 operation */
-    CKS0 = _08_PCLBUZ_OUTCLK_fSUB0;
+    CKS0 = _0B_PCLBUZ_OUTCLK_fSUB3;
     /* Set PCLBUZ0 pin */
     PFSEG3 &= 0xF7U;
     P14 &= 0xFEU;

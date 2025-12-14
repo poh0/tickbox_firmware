@@ -152,5 +152,9 @@ void R_LCD_Set_VoltageOn(void);
 void R_LCD_Set_VoltageOff(void);
 
 /* Start user code for function. Do not edit comment generated here */
+void R_LCD_Init_Segments(void);
+void R_LCD_Display_Hours(uint8_t hour);
+void R_LCD_Display_Minutes(uint8_t minutes);
+void R_LCD_Display_Colon(void);
 /* End user code. Do not edit comment generated here */
 #endif

@@ -61,7 +61,7 @@ static volatile uint8_t* const g_digit_seg_map[4][7] = {
   { &SEG2, &SEG3, &SEG24, &SEG23, &SEG22, &SEG1, &SEG0 }, // Digit 0
   { &SEG9, &SEG10, &SEG28, &SEG26, &SEG25, &SEG8, &SEG6 }, // Digit 1
   { &SEG14, &SEG15, &SEG33, &SEG32, &SEG31, &SEG13, &SEG12 }, // Digit 2
-  { &SEG18, &SEG37, &SEG36, &SEG35, &SEG34, &SEG17, &SEG16 } // Digit 3
+  { &SEG19, &SEG37, &SEG36, &SEG35, &SEG34, &SEG18, &SEG16 } // Digit 3
 }; /* should this be volatile ?*/
 
 
@@ -91,22 +91,20 @@ void R_LCD_Init_Segments(void)
 * Arguments    : hour - number 00-23 to be shown on the display
 * Return Value : None
 ***********************************************************************************************************************/
-void R_LCD_Display_Hours(uint8_t hour)
+void R_LCD_Display_Hours(uint8_t hour_bcd)
 {
-    if (hour > 23)
-    {
-        return;
-    }
+	const uint8_t hour_tens = hour_bcd >> 4;
+	const uint8_t hour_ones = hour_bcd & 0xF;
 
-    if (hour < 10)
+    if (hour_tens == 0)
     {
     	empty_hour_tens_digit();
-    	set_digit(1, hour);
+    	set_digit(1, hour_ones);
     }
     else
     {
-    	set_digit(0, hour / 10);
-    	set_digit(1, hour % 10);
+    	set_digit(0, hour_tens);
+    	set_digit(1, hour_ones);
     }
 
 }
@@ -117,23 +115,13 @@ void R_LCD_Display_Hours(uint8_t hour)
 * Arguments    : minutes - number 0 to 59 to be shown on the display
 * Return Value : None
 ***********************************************************************************************************************/
-void R_LCD_Display_Minutes(uint8_t minutes)
+void R_LCD_Display_Minutes(uint8_t minutes_bcd)
 {
-    if (minutes > 59)
-    {
-        return;
-    }
+	const uint8_t min_tens = minutes_bcd >> 4;
+	const uint8_t min_ones = minutes_bcd & 0xF;
 
-    if (minutes < 10)
-    {
-    	set_digit(2, 0);
-    	set_digit(3, minutes);
-    }
-    else
-    {
-    	set_digit(2, minutes / 10);
-    	set_digit(3, minutes % 10);
-    }
+	set_digit(2, min_tens);
+	set_digit(3, min_ones);
 }
 
 /***********************************************************************************************************************
@@ -145,6 +133,32 @@ void R_LCD_Display_Minutes(uint8_t minutes)
 void R_LCD_Display_Colon(void)
 {
 	SEG_COL |= 1u;
+}
+
+/* Zero out registers of a digit */
+static void empty_hour_tens_digit(void)
+{
+    uint8_t i;
+	for (i = 0; i < 7; i++)
+    {
+        *g_digit_seg_map[0][i] &= ~1u;
+    }
+}
+
+static void set_digit(uint8_t digit, uint8_t value)
+{
+	uint8_t i;
+	for (i = 0; i < 7; i++)
+	{
+		if ((g_digit_segments[value] >> i) & 1)
+		{
+			*g_digit_seg_map[digit][i] |= 1u;
+		}
+		else
+		{
+			*g_digit_seg_map[digit][i] &= ~1u;
+		}
+	}
 }
 
 /* End user code. Do not edit comment generated here */

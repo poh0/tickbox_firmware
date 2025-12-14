@@ -102,7 +102,7 @@ const void *Vectors[] VECT_SECT  = {
     // Address 0x30
     r_rtc_interrupt,
     // Address 0x32
-    R_Dummy,
+    r_it_interrupt,
     // Address 0x34
     R_Dummy,
     // Address 0x36

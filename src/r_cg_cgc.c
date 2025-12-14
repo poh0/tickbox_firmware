@@ -50,10 +50,22 @@ Global variables and functions
 void R_CGC_Create(void)
 {
     volatile uint32_t w_count;
+    uint8_t           temp_stab_set;
+    uint8_t           temp_stab_wait; 
 
     /* Set fMX */
-    CMC = _00_CGC_HISYS_PORT | _10_CGC_SUB_OSC | _00_CGC_SYSOSC_DEFAULT | _04_CGC_SUBMODE_ULOW;
-    MSTOP = 1U;
+    CMC = _40_CGC_HISYS_OSC | _10_CGC_SUB_OSC | _01_CGC_SYSOSC_OVER10M | _04_CGC_SUBMODE_ULOW;
+    OSTS = _07_CGC_OSCSTAB_SEL18;
+    MSTOP = 0U;
+    temp_stab_set = _FF_CGC_OSCSTAB_STA18;
+    
+    do
+    {
+        temp_stab_wait = OSTC;
+        temp_stab_wait &= temp_stab_set;
+    }
+    while (temp_stab_wait != temp_stab_set);
+    
     /* Set fMAIN */
     MCM0 = 0U;
     /* Set fSUB */

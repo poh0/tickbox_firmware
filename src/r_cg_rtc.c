@@ -53,9 +53,9 @@ void R_RTC_Create(void)
     RTCE = 0U;     /* disable RTC clock operation */
     RTCMK = 1U;    /* disable INTRTC interrupt */
     RTCIF = 0U;    /* clear INTRTC interrupt flag */
-    /* Set INTRTC low priority */
-    RTCPR1 = 1U;
-    RTCPR0 = 1U;
+    /* Set INTRTC high priority */
+    RTCPR1 = 0U;
+    RTCPR0 = 0U;
     RTCC0 = _00_RTC_RTC1HZ_DISABLE | _08_RTC_24HOUR_SYSTEM | _03_RTC_INTRTC_CLOCK_2;
     /* Set real-time clock */
     SEC = _00_RTC_COUNTER_SEC;

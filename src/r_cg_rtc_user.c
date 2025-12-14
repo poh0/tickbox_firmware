@@ -71,6 +71,7 @@ void r_rtc_interrupt(void)
 static void r_rtc_callback_constperiod(void)
 {
     /* Start user code. Do not edit comment generated here */
+	g_rtc_tick_flag = 1U;
     /* End user code. Do not edit comment generated here */
 }
 
@@ -83,6 +84,7 @@ static void r_rtc_callback_constperiod(void)
 static void r_rtc_callback_alarm(void)
 {
     /* Start user code. Do not edit comment generated here */
+	g_rtc_alarm_flag = 1U;
     /* End user code. Do not edit comment generated here */
 }
 

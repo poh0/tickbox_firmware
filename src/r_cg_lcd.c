@@ -56,9 +56,9 @@ void R_LCD_Create(void)
     /* Set segment pins */
     PFSEG0 |= 0x40U;
     PFSEG1 |= 0xFFU;
-    PFSEG2 |= 0xFDU;
+    PFSEG2 |= 0xCDU;
     PFSEG3 |= 0x97U;
-    PFSEG4 |= 0x7FU;
+    PFSEG4 |= 0x3FU;
     POM1 &= 0x7EU;
     PIM1 &= 0xFEU;
     PU1 &= 0x66U;
@@ -75,8 +75,6 @@ void R_LCD_Create(void)
     PU5 &= 0xE1U;
     P5 &= 0xE1U;
     PM5 &= 0xE1U;
-    P6 &= 0xFCU;
-    PM6 &= 0xFCU;
     PU7 &= 0xE0U;
     P7 &= 0xE0U;
     PM7 &= 0xE0U;
@@ -84,10 +82,10 @@ void R_LCD_Create(void)
     PMC12 &= 0xFEU;
     P12 &= 0xFEU;
     PM12 &= 0xFEU;
-    PU14 &= 0x01U;
+    PU14 &= 0x81U;
     PMC14 &= 0xC3U;
-    P14 &= 0x01U;
-    PM14 &= 0x01U;
+    P14 &= 0x81U;
+    PM14 &= 0x81U;
     LCDM1 |= _00_LCD_DISPLAY_PATTERN_A;
     LCDC0 = _08_LCD_CLOCK_FSUB_FIL_9;
 }
