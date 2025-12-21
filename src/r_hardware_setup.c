@@ -14,16 +14,16 @@
 * following link:
 * http://www.renesas.com/disclaimer
 *
-* Copyright (C) 2012, 2024 Renesas Electronics Corporation. All rights reserved.
+* Copyright (C) 2012, 2025 Renesas Electronics Corporation. All rights reserved.
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
 * File Name    : r_hardware_setup.c
-* Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
+* Version      : CodeGenerator for RL78/L12 V2.04.07.01 [22 May 2025]
 * Device(s)    : R5F10RLA
 * Tool-Chain   : GCCRL78
 * Description  : This file implements system initializing function.
-* Creation Date: 10/07/2025
+* Creation Date: 12/21/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -33,6 +33,7 @@ Includes
 #include "r_cg_cgc.h"
 #include "r_cg_port.h"
 #include "r_cg_intc.h"
+#include "r_cg_timer.h"
 #include "r_cg_rtc.h"
 #include "r_cg_it.h"
 #include "r_cg_pclbuz.h"
@@ -62,6 +63,7 @@ void R_Systeminit(void)
     R_CGC_Get_ResetSource();
     R_CGC_Create();
     R_PORT_Create();
+    R_TAU0_Create();
     R_RTC_Create();
     R_IT_Create();
     R_INTC_Create();

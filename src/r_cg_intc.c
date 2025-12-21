@@ -14,16 +14,16 @@
 * following link:
 * http://www.renesas.com/disclaimer
 *
-* Copyright (C) 2012, 2024 Renesas Electronics Corporation. All rights reserved.
+* Copyright (C) 2012, 2025 Renesas Electronics Corporation. All rights reserved.
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
 * File Name    : r_cg_intc.c
-* Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
+* Version      : CodeGenerator for RL78/L12 V2.04.07.01 [22 May 2025]
 * Device(s)    : R5F10RLA
 * Tool-Chain   : GCCRL78
 * Description  : This file implements device driver for INTC module.
-* Creation Date: 10/07/2025
+* Creation Date: 12/21/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -74,7 +74,7 @@ void R_INTC_Create(void)
     /* Set INTP5 low priority */
     PPR15 = 1U;
     PPR05 = 1U;
-    EGN0 = _01_INTP0_EDGE_FALLING_SEL | _04_INTP2_EDGE_FALLING_SEL | _20_INTP5_EDGE_FALLING_SEL;
+    EGP0 = _01_INTP0_EDGE_RISING_SEL | _04_INTP2_EDGE_RISING_SEL | _20_INTP5_EDGE_RISING_SEL;
     /* Set INTP2 pin */
     PFSEG0 &= 0xDFU;
     PM1 |= 0x40U;

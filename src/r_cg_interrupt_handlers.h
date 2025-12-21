@@ -14,16 +14,16 @@
 * following link:
 * http://www.renesas.com/disclaimer
 *
-* Copyright (C) 2012, 2024 Renesas Electronics Corporation. All rights reserved.
+* Copyright (C) 2012, 2025 Renesas Electronics Corporation. All rights reserved.
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
 * File Name    : r_cg_interrupt_handlers.h
-* Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
+* Version      : CodeGenerator for RL78/L12 V2.04.07.01 [22 May 2025]
 * Device(s)    : R5F10RLA
 * Tool-Chain   : GCCRL78
 * Description  : This file declares interrupt handlers.
-* Creation Date: 10/07/2025
+* Creation Date: 12/21/2025
 ***********************************************************************************************************************/
 
 #ifndef INTERRUPT_HANDLERS_H_H
@@ -50,6 +50,8 @@ void r_intc0_interrupt(void) __attribute__ ((interrupt));
 void r_intc2_interrupt(void) __attribute__ ((interrupt));
 //0x12
 void r_intc5_interrupt(void) __attribute__ ((interrupt));
+//0x20
+void r_tau0_channel0_interrupt(void) __attribute__ ((interrupt));
 //0x30
 void r_rtc_interrupt(void) __attribute__ ((interrupt));
 //0x32

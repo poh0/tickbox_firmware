@@ -14,16 +14,16 @@
 * following link:
 * http://www.renesas.com/disclaimer
 *
-* Copyright (C) 2012, 2024 Renesas Electronics Corporation. All rights reserved.
+* Copyright (C) 2012, 2025 Renesas Electronics Corporation. All rights reserved.
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
 * File Name    : r_main.c
-* Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
+* Version      : CodeGenerator for RL78/L12 V2.04.07.01 [22 May 2025]
 * Device(s)    : R5F10RLA
 * Tool-Chain   : GCCRL78
 * Description  : This file implements main function.
-* Creation Date: 10/07/2025
+* Creation Date: 12/21/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -33,6 +33,7 @@ Includes
 #include "r_cg_cgc.h"
 #include "r_cg_port.h"
 #include "r_cg_intc.h"
+#include "r_cg_timer.h"
 #include "r_cg_rtc.h"
 #include "r_cg_it.h"
 #include "r_cg_pclbuz.h"
@@ -67,6 +68,8 @@ rtc_counter_value_t g_time_data;
 
 static uint8_t g_adjust_state = 0;
 
+static uint8_t debouncing = 0;
+
 /* INTERRUPT FLAGS */
 volatile uint8_t g_rtc_tick_flag = 0;
 volatile uint8_t g_intp0_flag = 0;
@@ -74,6 +77,7 @@ volatile uint8_t g_intp2_flag = 0;
 volatile uint8_t g_intp5_flag = 0;
 volatile uint8_t g_it_flag = 0;
 volatile uint8_t g_rtc_alarm_flag = 0;
+volatile uint8_t g_tau0_flag = 0;
 /* -------------------- */
 
 void r_main_handle_rtc(void);
@@ -109,9 +113,18 @@ void main(void)
     	 * Meaning that pending interrupts will be ack'd after STOP instruction
     	 * Which means that there will be no lost wakeups.
     	 *  */
-        EI(); /* Enable interrupt acknowledgement */
-        STOP(); /* enter stop mode */
-        DI(); /* No more ISRs until we enter STOP mode */
+    	if (!debouncing)
+    	{
+            EI(); /* Enable interrupt acknowledgement */
+            STOP(); /* enter stop mode */
+            DI(); /* No more ISRs until we enter STOP mode */
+    	}
+    	else
+    	{
+            EI(); /* Enable interrupt acknowledgement */
+            HALT(); /* enter halt mode */
+            DI(); /* No more ISRs until we enter STOP mode */
+    	}
         r_main_handle_interrupt();
     }
     /* End user code. Do not edit comment generated here */
@@ -172,6 +185,33 @@ void r_main_handle_interrupt(void)
     	}
 
     	r_main_handle_rtc();
+    }
+
+    /* Handle interval timer interrupt */
+    if(g_it_flag)
+    {
+    	g_it_flag = 0;
+    	handle_timer();
+    }
+
+    /* Button debouncing */
+    if (g_tau0_flag)
+    {
+    	g_tau0_flag = 0;
+    	debouncing = 0;
+    	R_TAU0_Channel0_Stop();
+    	R_INTC0_Start();
+    	R_INTC2_Start();
+    	R_INTC5_Start();
+    }
+
+    if (g_intp0_flag || g_intp2_flag || g_intp5_flag)
+    {
+    	R_TAU0_Channel0_Start(); /* Start 20ms debounce timer */
+    	debouncing = 1;
+    	R_INTC0_Stop();
+    	R_INTC2_Stop();
+    	R_INTC5_Stop();
     }
 
     if (g_intp0_flag)
@@ -289,13 +329,6 @@ void r_main_handle_interrupt(void)
     			R_LCD_Display_Minutes(g_alarm_min_bcd);
     		}
     	}
-    }
-
-    /* Handle interval timer interrupt */
-    if(g_it_flag)
-    {
-    	g_it_flag = 0;
-    	handle_timer();
     }
 }
 

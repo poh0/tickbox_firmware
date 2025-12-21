@@ -14,16 +14,16 @@
 * following link:
 * http://www.renesas.com/disclaimer
 *
-* Copyright (C) 2012, 2024 Renesas Electronics Corporation. All rights reserved.
+* Copyright (C) 2012, 2025 Renesas Electronics Corporation. All rights reserved.
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
 * File Name    : r_cg_lcd.h
-* Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
+* Version      : CodeGenerator for RL78/L12 V2.04.07.01 [22 May 2025]
 * Device(s)    : R5F10RLA
 * Tool-Chain   : GCCRL78
 * Description  : This file implements device driver for LCD module.
-* Creation Date: 10/07/2025
+* Creation Date: 12/21/2025
 ***********************************************************************************************************************/
 
 #ifndef LCD_H

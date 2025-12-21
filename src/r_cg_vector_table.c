@@ -14,16 +14,16 @@
 * following link:
 * http://www.renesas.com/disclaimer
 *
-* Copyright (C) 2012, 2024 Renesas Electronics Corporation. All rights reserved.
+* Copyright (C) 2012, 2025 Renesas Electronics Corporation. All rights reserved.
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
 * File Name    : r_cg_vector_table.c
-* Version      : CodeGenerator for RL78/L12 V2.04.06.02 [03 Jun 2024]
+* Version      : CodeGenerator for RL78/L12 V2.04.07.01 [22 May 2025]
 * Device(s)    : R5F10RLA
 * Tool-Chain   : GCCRL78
 * Description  : This file implements interrupt vector.
-* Creation Date: 10/07/2025
+* Creation Date: 12/21/2025
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -84,7 +84,7 @@ const void *Vectors[] VECT_SECT  = {
     // Address 0x1E
     R_Dummy,
     // Address 0x20
-    R_Dummy,
+    r_tau0_channel0_interrupt,
     // Address 0x22
     R_Dummy,
     // Address 0x24

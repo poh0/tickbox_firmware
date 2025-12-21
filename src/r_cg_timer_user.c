@@ -18,11 +18,11 @@
 ***********************************************************************************************************************/
 
 /***********************************************************************************************************************
-* File Name    : r_cg_intc_user.c
+* File Name    : r_cg_timer_user.c
 * Version      : CodeGenerator for RL78/L12 V2.04.07.01 [22 May 2025]
 * Device(s)    : R5F10RLA
 * Tool-Chain   : GCCRL78
-* Description  : This file implements device driver for INTC module.
+* Description  : This file implements device driver for TAU module.
 * Creation Date: 12/21/2025
 ***********************************************************************************************************************/
 
@@ -30,7 +30,7 @@
 Includes
 ***********************************************************************************************************************/
 #include "r_cg_macrodriver.h"
-#include "r_cg_intc.h"
+#include "r_cg_timer.h"
 /* Start user code for include. Do not edit comment generated here */
 /* End user code. Do not edit comment generated here */
 #include "r_cg_userdefine.h"
@@ -42,46 +42,17 @@ Global variables and functions
 /* End user code. Do not edit comment generated here */
 
 /***********************************************************************************************************************
-* Function Name: r_intc0_interrupt
-* Description  : This function is INTP0 interrupt service routine.
+* Function Name: r_tau0_channel0_interrupt
+* Description  : This function is INTTM00 interrupt service routine.
 * Arguments    : None
 * Return Value : None
 ***********************************************************************************************************************/
-void r_intc0_interrupt(void)
+void r_tau0_channel0_interrupt(void)
 {
     /* Start user code. Do not edit comment generated here */
-	g_intp0_flag = 1U;
+	g_tau0_flag = 1;
     /* End user code. Do not edit comment generated here */
 }
-
-/***********************************************************************************************************************
-* Function Name: r_intc2_interrupt
-* Description  : This function is INTP2 interrupt service routine.
-* Arguments    : None
-* Return Value : None
-***********************************************************************************************************************/
-void r_intc2_interrupt(void)
-{
-    /* Start user code. Do not edit comment generated here */
-	g_intp2_flag = 1U;
-    /* End user code. Do not edit comment generated here */
-}
-
-/***********************************************************************************************************************
-* Function Name: r_intc5_interrupt
-* Description  : This function is INTP5 interrupt service routine.
-* Arguments    : None
-* Return Value : None
-***********************************************************************************************************************/
-void r_intc5_interrupt(void)
-{
-    /* Start user code. Do not edit comment generated here */
-	g_intp5_flag = 1U;
-    /* End user code. Do not edit comment generated here */
-}
-
-
-
 
 /* Start user code for adding. Do not edit comment generated here */
 /* End user code. Do not edit comment generated here */
