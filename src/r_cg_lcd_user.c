@@ -58,10 +58,10 @@ static const uint8_t g_digit_segments[10] = {
 };
 
 static volatile uint8_t* const g_digit_seg_map[4][7] = {
-  { &SEG2, &SEG3, &SEG24, &SEG23, &SEG22, &SEG1, &SEG0 }, // Digit 0
-  { &SEG9, &SEG10, &SEG28, &SEG26, &SEG25, &SEG8, &SEG6 }, // Digit 1
-  { &SEG14, &SEG15, &SEG33, &SEG32, &SEG31, &SEG13, &SEG12 }, // Digit 2
-  { &SEG19, &SEG37, &SEG36, &SEG35, &SEG34, &SEG18, &SEG16 } // Digit 3
+  { &SEG16, &SEG15, &SEG24, &SEG23, &SEG22, &SEG18, &SEG19 }, // Digit 0
+  { &SEG12, &SEG11, &SEG28, &SEG26, &SEG25, &SEG13, &SEG14 }, // Digit 1
+  { &SEG6, &SEG3, &SEG33, &SEG32, &SEG31, &SEG8, &SEG9 }, // Digit 2
+  { &SEG0, &SEG37, &SEG36, &SEG35, &SEG34, &SEG1, &SEG2 } // Digit 3
 }; /* should this be volatile ?*/
 
 

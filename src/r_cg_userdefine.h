@@ -38,7 +38,7 @@ User definitions
 #define HOUR_ADJUST     (0x00)      /* Selection state (hour adjust) */
 #define MINUTE_ADJUST   (0x01)      /* Selectrio state (minute adjust) */
 
-#define SEG_COL SEG11               /* Colon segment register */
+#define SEG_COL SEG10               /* Colon segment register */
 
 #define ALARM_SWOUT P12_bit.no6		/* Alarm switch output pin */
 #define ALARM_SWIN P12_bit.no7		/* Alarm switch input pin */

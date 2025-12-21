@@ -56,6 +56,9 @@ enum watch_state_t {
 	STATE_ALARM_ACTIVE
 } g_watch_state;
 
+// Was alarm handled/stopped for this minute?
+static uint8_t g_alarm_handled_this_minute = 0;
+
 static uint8_t g_min_bcd = 0, g_hour_bcd = 0;
 static uint8_t g_alarm_min_bcd = 0, g_alarm_hour_bcd = 0;
 
@@ -108,7 +111,8 @@ void main(void)
     	 *  */
         EI(); /* Enable interrupt acknowledgement */
         STOP(); /* enter stop mode */
-        r_main_handle_interrupt(); /* We woke up because of an interrupt */
+        DI(); /* No more ISRs until we enter STOP mode */
+        r_main_handle_interrupt();
     }
     /* End user code. Do not edit comment generated here */
 }
@@ -137,7 +141,7 @@ void R_MAIN_UserInit(void)
 
     /* Enable interrupts INTP0, INTP2 and INTP5 */
     R_INTC0_Start();
-    /*R_INTC2_Start();*/
+    R_INTC2_Start();
     R_INTC5_Start();
 
     R_RTC_Set_ConstPeriodInterruptOn(ONEMIN);   /* Enable RTC interrupt */
@@ -150,11 +154,11 @@ void R_MAIN_UserInit(void)
 
 void r_main_handle_interrupt(void)
 {
-	DI(); /* No more ISRs until we enter STOP mode */
 
     if (g_rtc_tick_flag)
     {
     	g_rtc_tick_flag = 0;
+    	g_alarm_handled_this_minute = 0;
         r_main_handle_rtc();
     }
 
@@ -162,7 +166,7 @@ void r_main_handle_interrupt(void)
     {
     	g_rtc_alarm_flag = 0;
 
-    	if (is_alarm_on() && g_watch_state == STATE_NORMAL)
+    	if (is_alarm_on() && g_watch_state == STATE_NORMAL && !g_alarm_handled_this_minute)
     	{
     		alarm_start();
     	}
@@ -228,6 +232,7 @@ void r_main_handle_interrupt(void)
 
     	if (g_watch_state == STATE_ALARM_ACTIVE)
     	{
+    		g_alarm_handled_this_minute = 1;
     		alarm_stop();
     	}
     }
@@ -307,7 +312,8 @@ void r_main_handle_rtc(void)
 		}
 		else
 		{
-			/* */
+			g_hour_bcd = 0x11;
+			g_min_bcd = 0x11;
 		}
 
 		R_LCD_Display_Hours(g_hour_bcd);
@@ -353,6 +359,7 @@ static void handle_timer(void)
 	if (g_timer_cnt == ALARM_LENGHT)
 	{
 		alarm_stop();
+		return;
 	}
 
 	/* BEEP pause BEEP pause pause*/
